@@ -26,7 +26,7 @@
 
 %left AND OR
 %left SUB ADD
-%left MULT
+%left MULT MOD
 %nonassoc NOT
 
 %start prog
