@@ -29,6 +29,7 @@ type token =
   | ADD
   | SUB
   | MULT
+  | MOD
   | IDENT of (string)
   | INT of (int)
 

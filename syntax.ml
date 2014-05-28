@@ -22,7 +22,7 @@ type label = int
 type var = string
 
 type binop =
-  | Add | Sub | Mult
+  | Add | Sub | Mult | Mod
 
 type expr =
   | Const of int

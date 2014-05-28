@@ -20,7 +20,7 @@
 			    
 %}
 
-%token FOR ASSERT ENSURE SKIP WHILE IF ELSE NOT AND OR EOF LP RP LB RB EQ NEQ LE LT GE GT PVL VL PT PTPT ASSIGN UNKNOWN ADD SUB MULT
+%token FOR ASSERT ENSURE SKIP WHILE IF ELSE NOT AND OR EOF LP RP LB RB EQ NEQ LE LT GE GT PVL VL PT PTPT ASSIGN UNKNOWN ADD SUB MULT MOD
 %token <string> IDENT
 %token <int> INT
 
@@ -57,6 +57,7 @@ expr:
  | expr ADD expr  { Syntax.Binop (Syntax.Add,$1,$3) }
  | expr SUB expr  { Syntax.Binop (Syntax.Sub,$1,$3) }
  | expr MULT expr { Syntax.Binop (Syntax.Mult,$1,$3) }
+ | expr MOD expr  { Syntax.Binop (Syntax.Mult,$1,$3) }
 ;
 
 
