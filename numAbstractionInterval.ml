@@ -252,7 +252,8 @@ struct
 		   let max4 i1 i2 i3 i4 =
 		     max_z' (max_z' i1 i2) (max_z' i3 i4) in
 		     Some ((min4 (mult' a c) (mult' a d) (mult' b c) (mult' b d),
-				max4 (mult' a c) (mult' a d) (mult' b c) (mult' b d))))
+			    max4 (mult' a c) (mult' a d) (mult' b c) (mult' b d))) 
+	    )
 	| _ -> None
 
   let reduce a b =

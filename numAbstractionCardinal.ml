@@ -168,6 +168,14 @@ struct
   
   let forward_mult =
     forward_binop_cardinal
+
+  let forward_rem n1 n2 = 
+    match n1 with 
+      | _, c1 ->
+	(match n2 with
+	  | _, c2 ->
+	    Top, c1) (* Need to refine *)
+    
   
   let backward_add n n1 n2 =
     n1, n2 (* TODO *)
@@ -177,7 +185,11 @@ struct
   
   let backward_mult n n1 n2 =
    n1, n2
-  
+    
+  let backward_rem n n1 n2 =
+    n1, n2 (* TODO *)
+      
+
   let const n =
     Top, Z.one
 
@@ -191,10 +203,12 @@ struct
     | Syntax.Add -> forward_add
     | Syntax.Sub -> forward_sub
     | Syntax.Mult -> forward_mult
+    | Syntax.Rem -> forward_rem
 
   let backward_binop = function
     | Syntax.Add -> backward_add
     | Syntax.Sub -> backward_sub
     | Syntax.Mult -> backward_mult
+    | Syntax.Rem -> backward_rem
 
 end
