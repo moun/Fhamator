@@ -1,6 +1,6 @@
-LIBPATH =
+LIBPATH = /Volumes/Dual/opt/local/lib/ocaml/site-lib/zarith
 OCAMLOPT=ocamlopt -annot -dtypes $(LIBPATH)
-OCAMLC=ocamlc -annot -g -dtypes -I +zarith $(LIBPATH)
+OCAMLC=ocamlc -annot -g -dtypes -I +zarith -I $(LIBPATH)
 LIBS=nums zarith
 
 SRCML= syntax.ml print.ml while_parser.ml while_lexer.ml parse.ml \
