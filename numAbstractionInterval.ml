@@ -55,7 +55,13 @@ struct
 	     | Infty_pos -> Infty_pos
 	     | Infty_neg -> Z x
 	     | Z y -> Z (Num.max_num x y))
-	    
+
+  let abs_z' x = 
+    match x with
+      | Z a -> Z (Num.abs_num a)
+      | Infty_pos 
+      | Infty_neg -> Infty_pos
+	
   let le_test x y =
     match (x,y) with
       | (Infty_neg,_) -> true
@@ -239,6 +245,17 @@ struct
 		 else Infty_neg
              | Infty_pos -> Infty_neg
              | Infty_neg -> Infty_pos)
+
+
+ 
+
+  (* TODO : need improvement *)
+  let forward_rem (x,y) (x',y') = 
+    if ((le_test (Z (Num.num_of_int 0))  x) &&  (le_test y x' )) then
+      (x, y)
+    else
+      (Z (Num.num_of_int 0), (max_z' (abs_z' x') (abs_z' y') ))
+    
     
   let forward_binop op i1 i2 =
       match (i1, i2) with
@@ -253,7 +270,7 @@ struct
 		     max_z' (max_z' i1 i2) (max_z' i3 i4) in
 		     Some ((min4 (mult' a c) (mult' a d) (mult' b c) (mult' b d),
 			    max4 (mult' a c) (mult' a d) (mult' b c) (mult' b d))) 
-	    )
+	       | Rem -> Some (forward_rem (a,b) (c,d)) )
 	| _ -> None
 
   let reduce a b =
@@ -267,7 +284,8 @@ struct
 		       reduce (max_z' e (sub' a d)) (min_z' f (sub' b c)))
 	     | Sub -> (reduce (max_z' c (add' a e)) (min_z' d (add' b f)),
 		       reduce (max_z' e (sub' c b)) (min_z' f (sub' d a)))
-	     | Mult -> (Some ((c,d)),Some ((e,f))))
+	     | Mult -> (Some ((c,d)),Some ((e,f)))
+	     | Rem -> (Some ((c,d)),Some ((e,f))))
       | _ -> (None,None)
   
   let const n =
