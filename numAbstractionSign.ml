@@ -498,15 +498,33 @@ struct
              | L.Pos0 -> L.Top
              | L.Neg0 -> L.Pos0)
 
+  (* a = q * b + r and 0 <= r < | b | *)
   let forward_rem n1 n2 = 
-    n1
-    (*match n1 with 
+    match n1 with 
       | L.Bot -> L.Bot
-      | L.Top -> 
-	(match n2 with
+      | L.Top
+      | L.Pos
+      | L.Neg
+      | L.Pos0
+      | L.Neg0 ->
+	(match n2 with 
 	  | L.Bot -> L.Bot
-	  | L.Top -> L.Top
-	  | L.Pos -> L.Top*)
+	  | L.Top -> L.Pos0
+	  | L.Pos -> L.Pos0
+	  | L.Neg -> L.Pos0
+	  | L.Zero -> L.Bot (* error *)
+	  | L.Pos0 -> L.Pos0 
+	  | L.Neg0 -> L.Pos0) 
+      | L.Zero -> 
+	(match n2 with
+	  | L.Bot 
+	  | L.Zero -> L.Bot
+	  | L.Top 
+	  | L.Pos
+	  | L.Neg
+	  | L.Pos0
+	  | L.Neg0 -> L.Zero)
+      
 	
   let backward_add n n1 n2 =
     match n with
@@ -1531,7 +1549,30 @@ struct
                     | L.Neg0 -> (n1, n2)))
 
   let backward_rem n n1 n2 =
-    (n1, n2)
+    match n with
+      | L.Bot -> (L.Bot, L.Bot)
+      | L.Top 
+      | L.Pos
+      | L.Neg (* todo ? *)
+      | L.Zero
+      | L.Pos0
+      | L.Neg0 ->
+	(match n1 with 
+	  | L.Bot -> (L.Bot, L.Bot)
+	  | L.Top 
+	  | L.Pos
+	  | L.Neg 
+	  | L.Zero
+	  | L.Pos0
+	  | L.Neg0 -> 
+	    (match n2 with
+	      | L.Bot -> (L.Bot, L.Bot)
+	      | L.Top
+	      | L.Pos
+	      | L.Neg
+	      | L.Zero
+	      | L.Pos0
+	      | L.Neg0 -> (n1, n2)))
   
   let const n =
     if n=0 then L.Zero
