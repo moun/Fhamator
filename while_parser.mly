@@ -57,7 +57,7 @@ expr:
  | expr ADD expr  { Syntax.Binop (Syntax.Add,$1,$3) }
  | expr SUB expr  { Syntax.Binop (Syntax.Sub,$1,$3) }
  | expr MULT expr { Syntax.Binop (Syntax.Mult,$1,$3) }
- | expr MOD expr  { Syntax.Binop (Syntax.Mult,$1,$3) }
+ | expr MOD expr  { Syntax.Binop (Syntax.Mod,$1,$3) }
 ;
 
 

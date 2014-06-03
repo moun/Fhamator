@@ -25,6 +25,7 @@ let print_op = function
   | Add -> "+"
   | Sub -> "-"
   | Mult -> "*"
+  | Mod -> "%"
       
 type symb = No | Plus | Opp | Mul
 
