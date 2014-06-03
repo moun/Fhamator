@@ -43,7 +43,7 @@ sig
     
   val init_env : unit -> L.t
 
-  val assign : Syntax.var -> Syntax.expr -> L.t -> L.t
+  val assign : ?l:Syntax.label -> Syntax.var -> Syntax.expr -> L.t -> L.t
         
   val backward_test : Syntax.test -> L.t -> L.t
 end

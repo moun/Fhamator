@@ -46,7 +46,7 @@ struct
     | Binop (op, e1, e2) ->
         AbNum.forward_binop op (forward_expr env e1) (forward_expr env e2)
 
-  let assign x e env =
+  let assign ?l x e env =
     reduce (L.update env x (forward_expr env e))
         
   let rec backward_expr env e n =
