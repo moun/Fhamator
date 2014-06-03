@@ -45,7 +45,9 @@ let rec print_expr tab priop first scal_optim = function
   | Binop (Sub,e1,e2)  -> 
       if priop = Mul || priop = Opp then sprintf "(%s - %s)" (print_expr tab Plus first scal_optim e1) (print_expr tab Opp false scal_optim e2)
       else sprintf "%s - %s" (print_expr tab Plus first scal_optim e1) (print_expr tab Opp false scal_optim e2)
-
+  | Binop(Mod, e1, e2) -> sprintf "%s %% %s" 
+    (print_expr tab Mul first scal_optim e1) (print_expr tab Mul false scal_optim e2)
+	
 let print_comp eq = function
   | Eq -> eq
   | Neq -> "<>"
