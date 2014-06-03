@@ -497,7 +497,17 @@ struct
              | L.Zero -> L.Zero
              | L.Pos0 -> L.Top
              | L.Neg0 -> L.Pos0)
-  
+
+  let forward_rem n1 n2 = 
+    n1
+    (*match n1 with 
+      | L.Bot -> L.Bot
+      | L.Top -> 
+	(match n2 with
+	  | L.Bot -> L.Bot
+	  | L.Top -> L.Top
+	  | L.Pos -> L.Top*)
+	
   let backward_add n n1 n2 =
     match n with
       | L.Bot -> (L.Bot, L.Bot)
@@ -1519,6 +1529,9 @@ struct
                     | L.Zero -> (n1, n2)
                     | L.Pos0 -> (n1, n2)
                     | L.Neg0 -> (n1, n2)))
+
+  let backward_rem n n1 n2 =
+    (n1, n2)
   
   let const n =
     if n=0 then L.Zero
@@ -1535,10 +1548,11 @@ struct
     | Syntax.Add -> forward_add
     | Syntax.Sub -> forward_sub
     | Syntax.Mult -> forward_mult
+    | Syntax.Rem -> forward_rem
 
   let backward_binop = function
     | Syntax.Add -> backward_add
     | Syntax.Sub -> backward_sub
     | Syntax.Mult -> backward_mult
-
+    | Syntax.Rem -> backward_rem
 end

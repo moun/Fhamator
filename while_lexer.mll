@@ -79,7 +79,7 @@ rule nexttoken = parse
   | '+'     { ADD }
   | '-'     { SUB }
   | '*'     { MULT }
-  | '%'     { MOD }
+  | '%'     { REM }
   | '='     { ASSIGN }
   | ','     { VL }
   | '?'     { UNKNOWN }

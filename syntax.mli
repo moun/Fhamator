@@ -22,7 +22,7 @@
 *)
 type label = int
 type var = string
-type binop = Add | Sub | Mult | Mod
+type binop = Add | Sub | Mult | Rem
 type expr =
     Const of int
   | Unknown
