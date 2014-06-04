@@ -76,7 +76,7 @@ struct
 	  | Set sy -> Set (Label_Set.union sx sy))
       in
       let join_cardinals cardx cardy =
-	let sum = (Z.add cardx cardy) in
+	let sum = (Z.add cardx cardy) in (*  TODO : this is not right! *)
 	if (Z.gt sum cardinal_top) then
 	  cardinal_top
 	else
@@ -126,14 +126,19 @@ struct
 	  (match s with
 	  | Top -> "Top"
 	  | Set s ->
+	    let start = ref true in
 	    Label_Set.fold
 	      (fun elt accu -> 
 		let string_elt = 
-		  Printf.sprintf ", %d" elt (* %d : hmmmm!! TODO  *)
+		  if (!start) then
+		    (start := false;
+		    Printf.sprintf "%d" elt) (* %d : hmmmm!! TODO  *)
+		  else
+		     Printf.sprintf ", %d" elt
 		in 
 		accu ^ string_elt) s "")
 	in
-	Printf.sprintf "({%s}, %s)" 
+	Printf.sprintf "({ %s }, %s)" 
 	  (label_set_to_string ppset) 
 	  (Z.to_string card) 
 	
