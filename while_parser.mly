@@ -36,11 +36,16 @@
 
 prog:
  | instrs EOF { $1, new_pp() }
+ | inputs PVL instrs { Syntax.Seq($1, $3), new_pp()  }
 ;
   
 option_pvl : 
  | PVL {}
  |     {}
+
+inputs :
+ | input PVL { $1 }
+ | input PVL inputs { Syntax.Seq ($1, $3) }
 
 
 instrs : 
@@ -74,12 +79,16 @@ comp:
  | NEQ { Syntax.Neq }
  | LE  { Syntax.Le }
  | LT  { Syntax.Lt }
+;
+
+input:
+ | INPUTH       { Syntax.Inputh (new_pp()) }
+ | INPUTL       { Syntax.Inputl (new_pp())  }
+;
 
 instr:
  | IDENT ASSIGN expr        { Syntax.Assign (new_pp (),$1,$3) }
  | SKIP                     { Syntax.Skip (new_pp ())}
- | INPUTH       { Syntax.Inputh (new_pp()) }
- | INPUTL       { Syntax.Inputl (new_pp())  }
 /* | ASSERT test            { Syntax.Assert ($2 var_tab) } 
  | ENSURE test              { Syntax.Ensure ($2 var_tab) } */
  | IF test block ELSE block { Syntax.If (new_pp (),$2,$3,$5) }
