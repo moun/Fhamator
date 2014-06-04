@@ -54,7 +54,7 @@ struct
 	| Top -> ppsety = Top
 	| Set sx -> 
 	  (match ppsety with
-	  | Top -> false
+	  | Top -> true
 	  | Set sy -> Label_Set.subset sx sy)
       in
       let order_dec_cardinals x y = Z.leq x y in
