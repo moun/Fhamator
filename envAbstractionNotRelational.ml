@@ -39,12 +39,12 @@ struct
     if !reduction && contains_bot env then L.bottom ()
     else env
 
-  let rec forward_expr env = function
-    | Const n -> AbNum.const n
+  let rec forward_expr ?(l = 0) env = function
+    | Const n -> AbNum.const ~l n
     | Unknown -> AbNum.L.top ()
     | Var x -> L.get env x
     | Binop (op, e1, e2) ->
-        AbNum.forward_binop op (forward_expr env e1) (forward_expr env e2)
+      AbNum.forward_binop ~l op (forward_expr env e1) (forward_expr env e2)
 
   let assign ?l x e env =
     reduce (L.update env x (forward_expr env e))

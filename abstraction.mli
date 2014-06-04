@@ -27,11 +27,11 @@ sig
 
   val backward_comp : Syntax.comp -> L.t -> L.t -> (L.t * L.t)
 
-  val forward_binop : Syntax.binop -> L.t -> L.t -> L.t  
+  val forward_binop : ?l:Syntax.label -> Syntax.binop -> L.t -> L.t -> L.t  
 
   val backward_binop : Syntax.binop -> L.t -> L.t -> L.t -> L.t * L.t
 
-  val const : int -> L.t
+  val const : ?l:Syntax.label -> int -> L.t
 end
 
 (** numeric abstraction of environments *)
