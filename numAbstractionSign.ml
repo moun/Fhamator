@@ -1574,7 +1574,7 @@ struct
 	      | L.Pos0
 	      | L.Neg0 -> (n1, n2)))
   
-  let const?l n =
+  let const ~l n =
     if n=0 then L.Zero
     else if n>0 then L.Pos
     else L.Neg
@@ -1585,7 +1585,7 @@ struct
     | Syntax.Lt -> backward_lt
     | Syntax.Le -> backward_le
 
-  let forward_binop ?l = function
+  let forward_binop ~l = function
     | Syntax.Add -> forward_add
     | Syntax.Sub -> forward_sub
     | Syntax.Mult -> forward_mult

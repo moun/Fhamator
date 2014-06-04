@@ -94,7 +94,7 @@ struct
     List.map
       (function (l1,i,l2) ->
 	match i with (* Check if should pass l1 or l2?*)
-	   | Cfg.Assign (x,e) -> (l1,AbEnv.assign ~l:l1 x e,l2)
+	  | Cfg.Assign (x,e) -> (l1,AbEnv.assign ~l:(Some l1) x e,l2)
 	   | Cfg.Assert t -> (l1,AbEnv.backward_test t,l2)
       )
       (Cfg.build p)
@@ -104,7 +104,7 @@ struct
       (function (l1,i,l2) ->
 	 if
 	   (match i with  (* Check if should pass l1 or l2?*)
-	     | Cfg.Assign (x,e) -> AbEnv.L.order_dec (AbEnv.assign ~l:l1 x e (res l1)) (res l2)
+	     | Cfg.Assign (x,e) -> AbEnv.L.order_dec (AbEnv.assign ~l:(Some l1) x e (res l1)) (res l2)
 	      | Cfg.Assert t -> AbEnv.L.order_dec (AbEnv.backward_test t (res l1)) (res l2))
 	 then ()
 	 else failwith (Printf.sprintf "wrong postfixpoint in edges (%d -> %d)\n" l1 l2))

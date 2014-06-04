@@ -149,10 +149,10 @@ struct
   let backward_le n1 n2 =
     (n1, n2)
 
-  let forward_binop_cardinal ?l n1 n2 = n1
-    (*let label = match l with
-      | 0 -> Set Label_Set.empty
-      |  l' -> Set (Label_Set.singleton l')
+  let forward_binop_cardinal ~l n1 n2 =
+    let label = match l with
+      | None -> Set Label_Set.empty
+      |  Some l' -> Set (Label_Set.singleton l')
     in
     match n1 with
     | _, c1 ->
@@ -162,10 +162,10 @@ struct
 	if (Z.gt mult cardinal_top) then
 	  label,cardinal_top
 	else
-	  label,mult)*)
+	  label,mult)
 
-  let forward_add ?l n1 n2   =
-    forward_binop_cardinal ~l n1 n2
+  let forward_add  =
+    forward_binop_cardinal 
   
   let forward_sub =
     forward_binop_cardinal
@@ -173,7 +173,7 @@ struct
   let forward_mult =
     forward_binop_cardinal
 
-  let forward_rem ?l   n1 n2 =
+  let forward_rem ~l  n1 n2 = 
     let label = match l with
       | None -> Set Label_Set.empty
       | Some l' -> Set (Label_Set.add l' Label_Set.empty)
@@ -198,7 +198,7 @@ struct
     n1, n2 (* TODO *)
       
 
-  let const ?l n =
+  let const ~l n =
     Top, Z.one
 
   let backward_comp = function
@@ -207,10 +207,10 @@ struct
     | Syntax.Lt -> backward_lt
     | Syntax.Le -> backward_le
 
-  let forward_binop ?l op n1 n2  = match op with 
-    (*| Syntax.Add -> forward_add ~l n1 n2
+  let forward_binop ~l op n1 n2  = match op with 
+    | Syntax.Add -> forward_add ~l n1 n2
     | Syntax.Sub -> forward_sub ~l n1 n2
-    | Syntax.Mult -> forward_mult ~l n1 n2*)
+    | Syntax.Mult -> forward_mult ~l n1 n2
     | Syntax.Rem -> forward_rem ~l n1 n2
 
   let backward_binop = function

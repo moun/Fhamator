@@ -257,7 +257,7 @@ struct
       (Z (Num.num_of_int 0), (max_z' (abs_z' x') (abs_z' y') ))
     
     
-  let forward_binop ?l op i1 i2 =
+  let forward_binop ~l op i1 i2 =
       match (i1, i2) with
 	| (Some (a,b), Some (c,d)) ->
 	    (match op with
@@ -288,7 +288,7 @@ struct
 	     | Rem -> (Some ((c,d)),Some ((e,f))))
       | _ -> (None,None)
   
-  let const ?l n =
+  let const ~l n =
     Some (((Z (Num.num_of_int n)), (Z (Num.num_of_int n))))
 
 end

@@ -39,27 +39,28 @@ struct
     if !reduction && contains_bot env then L.bottom ()
     else env
 
-  let rec forward_expr ?(l = 0) env = function
+  let rec forward_expr ~l env = function
     | Const n -> AbNum.const ~l n
     | Unknown -> AbNum.L.top ()
     | Var x -> L.get env x
     | Binop (op, e1, e2) ->
-      AbNum.forward_binop ~l op (forward_expr env e1) (forward_expr env e2)
+      AbNum.forward_binop ~l op (forward_expr ~l env e1) (forward_expr ~l env e2)
 
-  let assign ?l x e env =
-    reduce (L.update env x (forward_expr env e))
+  let assign ~l x e env =
+    reduce (L.update env x (forward_expr ~l env e))
         
   let rec backward_expr env e n =
     match e with
       | Const n0 ->
-          (if AbNum.L.order_dec (AbNum.L.meet (AbNum.const n0) n) (AbNum.L.bottom ()) 
+        (if AbNum.L.order_dec (AbNum.L.meet (AbNum.const ~l:None n0) n) (AbNum.L.bottom ()) 
 	   then L.bottom ()
 	   else env)
       | Unknown -> env
       | Var x -> L.update env x (AbNum.L.meet n (L.get env x))
       | Binop (op, e1, e2) ->
           let (n1, n2) = 
-	    AbNum.backward_binop op n (forward_expr env e1) (forward_expr env e2)
+	    AbNum.backward_binop op n (forward_expr ~l:None env e1)
+	      (forward_expr ~l:None env e2)
           in
             L.meet (backward_expr env e1 n1) (backward_expr env e2 n2)
   
@@ -67,7 +68,8 @@ struct
     reduce (
       match t with
 	| Comp (c, e1, e2) ->
-            let (n1, n2) = AbNum.backward_comp c (forward_expr env e1) (forward_expr env e2) in
+          let (n1, n2) = AbNum.backward_comp c (forward_expr ~l:None env e1)
+	    (forward_expr ~l:None env e2) in
               L.meet (backward_expr env e1 n1) (backward_expr env e2 n2)
 	| And (t1, t2) -> L.meet (backward_test t1 env) (backward_test t2 env)
 	| Or (t1, t2) -> L.join (backward_test t1 env) (backward_test t2 env)
