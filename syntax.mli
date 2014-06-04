@@ -39,6 +39,8 @@ type stmt =
   | If of label * test * stmt * stmt
   | While of label * test * stmt
   | Seq of stmt * stmt
+  | Inputh of label
+  | Inputl of label
 type program = stmt * label
  
 val vars : program -> var list

@@ -38,7 +38,9 @@
     Hashtbl.add kwd_tab "else" ELSE;
     Hashtbl.add kwd_tab "not" NOT;
     Hashtbl.add kwd_tab "and" AND;
-    Hashtbl.add kwd_tab "or" OR
+    Hashtbl.add kwd_tab "or" OR;
+    Hashtbl.add kwd_tab "inputh" INPUTH;
+    Hashtbl.add kwd_tab "inputl" INPUTL
 
   let id_or_kwd s = (* cherche le token associé à s ou renvoie IDENT s *)  
     try Hashtbl.find kwd_tab s 

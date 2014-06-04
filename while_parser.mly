@@ -20,7 +20,7 @@
 			    
 %}
 
-%token FOR ASSERT ENSURE SKIP WHILE IF ELSE NOT AND OR EOF LP RP LB RB EQ NEQ LE LT GE GT PVL VL PT PTPT ASSIGN UNKNOWN ADD SUB MULT REM
+%token FOR ASSERT ENSURE SKIP WHILE INPUTH INPUTL IF ELSE NOT AND OR EOF LP RP LB RB EQ NEQ LE LT GE GT PVL VL PT PTPT ASSIGN UNKNOWN ADD SUB MULT REM
 %token <string> IDENT
 %token <int> INT
 
@@ -78,6 +78,8 @@ comp:
 instr:
  | IDENT ASSIGN expr        { Syntax.Assign (new_pp (),$1,$3) }
  | SKIP                     { Syntax.Skip (new_pp ())}
+ | INPUTH       { Syntax.Inputh (new_pp()) }
+ | INPUTL       { Syntax.Inputl (new_pp())  }
 /* | ASSERT test            { Syntax.Assert ($2 var_tab) } 
  | ENSURE test              { Syntax.Ensure ($2 var_tab) } */
  | IF test block ELSE block { Syntax.If (new_pp (),$2,$3,$5) }
