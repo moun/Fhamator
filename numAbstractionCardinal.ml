@@ -75,17 +75,17 @@ struct
 	  | Top -> Top
 	  | Set sy -> Set (Label_Set.union sx sy))
       in
-      let join_cardinals cardx cardy =
-	let sum = (Z.add cardx cardy) in (*  TODO : this is not right! *)
+      let join_cardinals cardx cardy = Z.max cardx cardy 
+	(*let sum = (Z.add cardx cardy) in (*  TODO : this is not right! *)
 	if (Z.gt sum cardinal_top) then
 	  cardinal_top
 	else
-	  sum
-      in
+	  sum *)
+      in (* This is the transfer function for conditionals *)
       match x,y with
-      | (ppsetx,cardx),(ppsety,cardy) -> 
-	join_labels ppsetx ppsety,
-	join_cardinals cardx cardy
+	| (ppsetx,cardx),(ppsety,cardy) -> 
+	  join_labels ppsetx ppsety,
+	  join_cardinals cardx cardy
 	  
 	
     let meet x y =
