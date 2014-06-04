@@ -38,6 +38,10 @@ struct
 
   let cardinal_top = Z.succ (Z.sub (Z.of_int max_int) (Z.of_int min_int))
 
+  let ppset_l = function
+    | None -> Set Label_Set.empty
+    | Some l -> Set (Label_Set.add l Label_Set.empty)
+
   module L =
   struct
 
@@ -150,10 +154,7 @@ struct
     (n1, n2)
 
   let forward_binop_cardinal ~l n1 n2 =
-    let label = match l with
-      | None -> Set Label_Set.empty
-      |  Some l' -> Set (Label_Set.singleton l')
-    in
+    let label = ppset_l l in
     match n1 with
     | _, c1 ->
       (match n2 with
@@ -174,10 +175,7 @@ struct
     forward_binop_cardinal
 
   let forward_rem ~l  n1 n2 = 
-    let label = match l with
-      | None -> Set Label_Set.empty
-      | Some l' -> Set (Label_Set.add l' Label_Set.empty)
-    in
+    let label = ppset_l l in
     match n1 with 
       | _, c1 ->
 	(match n2 with
@@ -199,7 +197,8 @@ struct
       
 
   let const ~l n =
-    Top, Z.one
+    let label = ppset_l l in
+    label, Z.one
 
   let backward_comp = function
     | Syntax.Eq -> backward_eq
