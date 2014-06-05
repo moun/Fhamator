@@ -65,6 +65,9 @@ expr:
  | expr REM expr  { Syntax.Binop (Syntax.Rem,$1,$3) }
 ;
 
+list_vars:
+ | IDENT      { [  $1]  }
+;
 
 test:
  | LP test RP     { $2 }
@@ -82,8 +85,8 @@ comp:
 ;
 
 input:
- | INPUTH       { Syntax.Inputh (new_pp()) }
- | INPUTL       { Syntax.Inputl (new_pp())  }
+ | INPUTH list_vars      { Syntax.Inputh (new_pp(), $2) }
+ | INPUTL list_vars       { Syntax.Inputl (new_pp(), $2)  }
 ;
 
 instr:

@@ -43,8 +43,8 @@ type stmt =
   | If of label * test * stmt * stmt
   | While of label * test *stmt
   | Seq of stmt * stmt
-  | Inputh of label
-  | Inputl of label
+  | Inputh of label * var list
+  | Inputl of label * var list
 
 type program = stmt * label
 
@@ -71,7 +71,7 @@ let rec var_stmt s = function
   | If (l,t,b1,b2) -> var_test (var_stmt (var_stmt s b1) b2) t
   | While (l,t,b) -> var_test (var_stmt s b) t
   | Seq (i1,i2) -> var_stmt (var_stmt s i1) i2
-  | Inputh l -> s (* TODO *)
-  | Inputl l -> s (* TODO *)
+  | Inputh (l, lvars) -> s (* TODO *)
+  | Inputl (l, lvars) -> s (* TODO *)
 
 let vars (p,l) = S.elements (var_stmt S.empty p)

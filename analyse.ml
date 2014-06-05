@@ -61,8 +61,8 @@ struct
     | Syntax.If (l,t,b1,b2) -> Seq (Single l, Seq (gen_strategy b1, gen_strategy b2))
     | Syntax.While (l,t,b) -> Loop (l, gen_strategy b)
     | Syntax.Seq (i1,i2) -> Seq (gen_strategy i1, gen_strategy i2)
-    | Syntax.Inputh l -> Single l
-    | Syntax.Inputl l -> Single l
+    | Syntax.Inputh (l,_lvars) -> Single l (* TODO *)
+    | Syntax.Inputl (l, _lvars) -> Single l (* TODO *)
 
   let strategy (p,l) = 
     Seq (gen_strategy p,Single l)
@@ -97,7 +97,7 @@ struct
       (function (l1,i,l2) ->
 	match i with (* Check if should pass l1 or l2?*)
 	  | Cfg.Assign (x,e) -> (l1,AbEnv.assign ~l:(Some l1) x e,l2)
-	   | Cfg.Assert t -> (l1,AbEnv.backward_test t,l2)
+	  | Cfg.Assert t -> (l1,AbEnv.backward_test t,l2)
       )
       (Cfg.build p)
 
