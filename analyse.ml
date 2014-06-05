@@ -61,6 +61,8 @@ struct
     | Syntax.If (l,t,b1,b2) -> Seq (Single l, Seq (gen_strategy b1, gen_strategy b2))
     | Syntax.While (l,t,b) -> Loop (l, gen_strategy b)
     | Syntax.Seq (i1,i2) -> Seq (gen_strategy i1, gen_strategy i2)
+    | Syntax.Inputh l -> Single l
+    | Syntax.Inputl l -> Single l
 
   let strategy (p,l) = 
     Seq (gen_strategy p,Single l)

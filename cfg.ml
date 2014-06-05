@@ -32,6 +32,8 @@ let rec entry = function
   | If (l,t,i1,i2) -> l
   | While (l,t,i)  -> l
   | Seq (i1,i2) -> entry i1
+  | Inputh l -> l
+  | Inputl l -> l
 
 let neg_comp = function
   | Eq -> Neq
@@ -55,6 +57,8 @@ let rec cfg end_label = function
       S.add (l,Assert t,entry i) 
 	(S.add (l,Assert (neg_test t),end_label) (cfg l i))
   | Seq (i1,i2) -> S.union (cfg (entry i2) i1) (cfg end_label i2)
+  | Inputh l (* TODO Later *)
+  | Inputl l -> S.add (l, Assert (Comp (Eq, Const 0, Const 0)), end_label) S.empty
 
 let build (p,l) = S.elements (cfg l p)
 
