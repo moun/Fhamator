@@ -26,6 +26,7 @@ type binop = Add | Sub | Mult | Rem
 type expr =
     Const of int
   | Unknown
+  | Initl
   | Var of var
   | Binop of binop * expr * expr
 type comp = Eq | Neq | Le | Lt

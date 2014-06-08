@@ -42,6 +42,7 @@ struct
   let rec forward_expr ~l env = function
     | Const n -> AbNum.const ~l n
     | Unknown -> AbNum.L.top ()
+    | Initl -> AbNum.initl ~l 
     | Var x -> L.get env x
     | Binop (op, e1, e2) ->
       AbNum.forward_binop ~l op (forward_expr ~l env e1) (forward_expr ~l env e2)
@@ -56,6 +57,7 @@ struct
 	   then L.bottom ()
 	   else env)
       | Unknown -> env
+      | Initl -> env
       | Var x -> L.update env x (AbNum.L.meet n (L.get env x))
       | Binop (op, e1, e2) ->
           let (n1, n2) = 

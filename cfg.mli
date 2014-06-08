@@ -23,6 +23,7 @@
 type instr = 
   | Assign of Syntax.var * Syntax.expr 
   | Assert of Syntax.test
+  | Input of Syntax.var list * Syntax.expr
 
 (** entry label of statements *)
 val entry : Syntax.stmt -> Syntax.label

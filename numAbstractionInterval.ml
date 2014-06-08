@@ -291,4 +291,6 @@ struct
   let const ~l n =
     Some (((Z (Num.num_of_int n)), (Z (Num.num_of_int n))))
 
+  let initl ~l = L.top ()
+
 end

@@ -1,3 +1,4 @@
+
 %{
   
   let token_var = ref 0
@@ -67,6 +68,7 @@ expr:
 
 list_vars:
  | IDENT      { [  $1]  }
+ | IDENT VL list_vars { $1 :: $3 }
 ;
 
 test:

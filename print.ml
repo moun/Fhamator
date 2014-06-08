@@ -103,8 +103,12 @@ let rec print_instr tab f idt end_block = function
       sprintf "%s%swhile %s {\n%s%s}%s" (f idt l) idt pt
         (print_instr tab f (idt^ident) "\n" b) idt end_block
   | Seq (i1,i2) -> sprintf "%s;\n%s" (print_instr tab f idt "" i1) (print_instr tab f idt end_block i2)
-  | Inputh (l, _lvars) -> sprintf "%s%sinputh%s" (f idt l) idt end_block (* TODO *)
-  | Inputl (l, _lvars) -> sprintf "%s%sinputh%s" (f idt l) idt end_block (* TODO *)
+  | Inputh (l, lvars) -> sprintf "%s%sinputh%s%s" (f idt l) idt 
+    (List.fold_left (fun accu elt -> sprintf "%s %s" accu (tab elt) ) "" lvars)
+    end_block 
+  | Inputl (l, lvars) -> sprintf "%s%sinputl%s%s" (f idt l) idt 
+    (List.fold_left (fun accu elt -> sprintf "%s %s" accu (tab elt) ) "" lvars)
+    end_block (* TODO *)
 let print_expr = print_expr (fun x -> x) No true false
 
 let print_test = print_test (fun x -> x)

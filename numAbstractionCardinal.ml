@@ -205,6 +205,10 @@ struct
     let label = ppset_l l in
     label, Z.one
 
+  let initl ~l =
+    let label = ppset_l l in
+    label, Z.one
+
   let backward_comp = function
     | Syntax.Eq -> backward_eq
     | Syntax.Neq -> backward_neq

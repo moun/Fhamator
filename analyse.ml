@@ -44,7 +44,9 @@ struct
   let rec apply_eq s = function
     | [] -> AbEnv.L.bottom ()
     | [l,f] -> f (get_abenv s l)
-    | (l,f)::q -> AbEnv.L.join (f (get_abenv s l)) (apply_eq s q)
+    | (l,f)::q -> (* Oh! *)
+      print_string (Printf.sprintf " %d \n" l);
+      AbEnv.L.join (f (get_abenv s l)) (apply_eq s q)
 
   let modify s k f =
     M.add k (f (get_abenv s k)) s
@@ -98,6 +100,13 @@ struct
 	match i with (* Check if should pass l1 or l2?*)
 	  | Cfg.Assign (x,e) -> (l1,AbEnv.assign ~l:(Some l1) x e,l2)
 	  | Cfg.Assert t -> (l1,AbEnv.backward_test t,l2)
+	  | Cfg.Input (lvars, e) -> 
+	    let f abenv = 
+	      List.fold_left 
+		(fun accu x -> AbEnv.assign ~l:(Some l1) x e accu)
+		abenv lvars
+	    in (l1, f, l2)
+	    
       )
       (Cfg.build p)
 
@@ -107,7 +116,14 @@ struct
 	 if
 	   (match i with  (* Check if should pass l1 or l2?*)
 	     | Cfg.Assign (x,e) -> AbEnv.L.order_dec (AbEnv.assign ~l:(Some l1) x e (res l1)) (res l2)
-	      | Cfg.Assert t -> AbEnv.L.order_dec (AbEnv.backward_test t (res l1)) (res l2))
+	      | Cfg.Assert t -> AbEnv.L.order_dec (AbEnv.backward_test t (res l1)) (res l2)
+	      | Cfg.Input (lvars, e) -> 
+		AbEnv.L.order_dec 
+		  (List.fold_left 
+		     (fun accu x ->AbEnv.assign ~l:(Some l1) x e accu)
+		     (res l1) lvars)
+		  (res l2)
+	   )
 	 then ()
 	 else failwith (Printf.sprintf "wrong postfixpoint in edges (%d -> %d)\n" l1 l2))
       (Cfg.build p)

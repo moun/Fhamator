@@ -1578,6 +1578,9 @@ struct
     if n=0 then L.Zero
     else if n>0 then L.Pos
     else L.Neg
+      
+  
+  let initl ~l = L.top ()
 
   let backward_comp = function
     | Syntax.Eq -> backward_eq

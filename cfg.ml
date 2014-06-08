@@ -23,6 +23,7 @@ open Syntax
 type instr =
   | Assign of var * expr
   | Assert of test
+  | Input of var list * expr     
 
 module S = Set.Make (struct type t = label * instr * label let compare = compare end)
 
@@ -57,8 +58,8 @@ let rec cfg end_label = function
       S.add (l,Assert t,entry i) 
 	(S.add (l,Assert (neg_test t),end_label) (cfg l i))
   | Seq (i1,i2) -> S.union (cfg (entry i2) i1) (cfg end_label i2)
-  | Inputh (l, _lvars) (* TODO Later *)
-  | Inputl (l, _lvars) -> S.add (l, Assert (Comp (Eq, Const 0, Const 0)), end_label) S.empty
+  | Inputh (l, lvars) -> S.add (l, Input (lvars, Unknown),end_label) S.empty
+  | Inputl (l, lvars) -> S.add (l, Input (lvars, Initl),end_label) S.empty
 
 let build (p,l) = S.elements (cfg l p)
 

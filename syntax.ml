@@ -27,6 +27,7 @@ type binop =
 type expr =
   | Const of int
   | Unknown
+  | Initl
   | Var of var
   | Binop of binop * expr * expr
 
@@ -57,6 +58,7 @@ module S = Set.Make (struct type t = var let compare = compare end)
 let rec var_expr s = function
   | Const z -> s
   | Unknown -> s
+  |  Initl -> s
   | Var x -> S.add x s
   | Binop (o,e1,e2) -> var_expr (var_expr s e1) e2
 
@@ -71,7 +73,8 @@ let rec var_stmt s = function
   | If (l,t,b1,b2) -> var_test (var_stmt (var_stmt s b1) b2) t
   | While (l,t,b) -> var_test (var_stmt s b) t
   | Seq (i1,i2) -> var_stmt (var_stmt s i1) i2
-  | Inputh (l, lvars) -> s (* TODO *)
-  | Inputl (l, lvars) -> s (* TODO *)
+  | Inputh (l, lvars)
+  | Inputl (l, lvars) -> 
+    List.fold_left (fun accu elt -> S.add elt accu) s lvars
 
 let vars (p,l) = S.elements (var_stmt S.empty p)
