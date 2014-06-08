@@ -58,7 +58,7 @@ module S = Set.Make (struct type t = var let compare = compare end)
 let rec var_expr s = function
   | Const z -> s
   | Unknown -> s
-  |  Initl -> s
+  | Initl -> s
   | Var x -> S.add x s
   | Binop (o,e1,e2) -> var_expr (var_expr s e1) e2
 

@@ -33,8 +33,8 @@ let rec entry = function
   | If (l,t,i1,i2) -> l
   | While (l,t,i)  -> l
   | Seq (i1,i2) -> entry i1
-  | Inputh (l, _lvars) -> l (* TODO *)
-  | Inputl (l, _lvars) -> l (* TODO *)
+  | Inputh (l, _lvars) -> l 
+  | Inputl (l, _lvars) -> l 
 
 let neg_comp = function
   | Eq -> Neq
@@ -71,6 +71,11 @@ let print_cfg p =
 	 (match i with
 	    | Assign (x,e) -> Printf.sprintf "%s := %s" x ((Print.print_expr e))
 	    | Assert t -> Print.print_test t
+	    | Input (lvars, e) ->
+		Printf.sprintf "%s %s" 
+		(List.fold_left (fun accu x -> Printf.sprintf "%s, %s" accu x)
+		   "Input" lvars)
+		(Print.print_expr e)
 	 )
 	 l2)
     (build p)

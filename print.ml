@@ -32,6 +32,7 @@ type symb = No | Plus | Opp | Mul
 let rec print_expr tab priop first scal_optim = function
   | Const z -> string_of_int z
   | Unknown -> "?"
+  | Initl -> "?l" 
   | Var x -> tab x
   | Binop (Sub,e,Const i) when i=0  -> 
       if priop = No || priop = Opp || first then sprintf "-%s" (print_expr tab Opp false scal_optim e)
