@@ -41,7 +41,7 @@ struct
 
   let rec forward_expr ~l env = function
     | Const n -> AbNum.const ~l n
-    | Unknown -> AbNum.L.top ()
+    | Unknown -> AbNum.inith ~l 
     | Initl -> AbNum.initl ~l 
     | Var x -> L.get env x
     | Binop (op, e1, e2) ->

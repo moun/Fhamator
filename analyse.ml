@@ -44,7 +44,7 @@ struct
   let rec apply_eq s = function
     | [] -> AbEnv.L.bottom ()
     | [l,f] -> f (get_abenv s l)
-    | (l,f)::q -> (* Oh! *)
+    | (l,f)::q -> (* Oh the join! *)
       print_string (Printf.sprintf " %d \n" l);
       AbEnv.L.join (f (get_abenv s l)) (apply_eq s q)
 

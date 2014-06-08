@@ -34,6 +34,8 @@ sig
   val const : l:Syntax.label option -> int -> L.t
 
   val initl : l:Syntax.label option -> L.t 
+
+  val inith :l:Syntax.label option -> L.t
 end
 
 (** numeric abstraction of environments *)

@@ -209,6 +209,10 @@ struct
     let label = ppset_l l in
     label, Z.one
 
+  let inith ~l = 
+    let label = ppset_l l in
+    label, cardinal_top
+
   let backward_comp = function
     | Syntax.Eq -> backward_eq
     | Syntax.Neq -> backward_neq
