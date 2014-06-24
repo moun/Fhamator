@@ -1,3 +1,3 @@
-inputl ;
-inputh ;
+inputl x ;
+inputh y ;;
 x = y;
