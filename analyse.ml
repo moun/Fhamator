@@ -116,29 +116,7 @@ struct
 	  | _ -> 
 	    raise (Failure "Two states to merge that are not the immediate postdom!"))
 	in
-	M.merge merge s1' s2'
-	(* Now, we've got the map of AbEnvs for both branches *)
-	(* This is infortunate... The states are computed over both branches
-	   but they do not get merged until we arrive at the merge point.
-	   Grrrr!!!! 
-	   The key point: abstract envs are mapped to labels, not instructions
-	*)
-	(* Seems there's quiet some differences between WA and MITA, let aside
-	   the design choices.
-	   MITA seems to rely on a big-step semantics, whereas WA relies on a
-	   small-step semantics. To Confirm!! Maybe it's a Big one that I do
-	   need!
-	   This seems actually natural knowing that the solution I'm converging
-	   to consists in adding a new instruction forcing the iter to merge the
-	   abstract states, which is usually what's done in a small step
-	   semantics when more information is necessary.
-	*)
-      (** euh, need to merge those! The great thing about how it is done
-	  now, is that it does not assume anything about the CFG.
-	  Yet, it works... not sure If I am gonna be able to carry on...
-	  Oh! Generate another set of constraints having a completely
-	  different signature right ??
-      **)
+	M.merge merge s0 (M.merge merge s1' s2')
       | Loop (l,strat) ->
 	let s = iter  l0 sys (Single l) s end_label in
 	    let rec loop_widen s =
