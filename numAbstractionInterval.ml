@@ -273,6 +273,14 @@ struct
 	       | Rem -> Some (forward_rem (a,b) (c,d)) )
 	| _ -> None
 
+  let forward_comp ~l = function (* TODO *)
+    | Syntax.Eq -> forward_binop ~l Add
+    | Syntax.Neq -> forward_binop ~l Add
+    | Syntax.Lt -> forward_binop ~l Add
+    | Syntax.Le -> forward_binop ~l Add
+
+  let forward_if ~l cond = L.join 
+
   let reduce a b =
     if le_test a b then Some ((a, b)) else None
 

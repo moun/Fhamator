@@ -43,8 +43,13 @@ struct
   let get_abenv s l = get (AbEnv.L.bottom ()) s l
   let rec apply_eq s = function
     | [] -> AbEnv.L.bottom ()
-    | [l,f] -> f (get_abenv s l)
+    | [l,f] ->  (*Printf.printf "1: %d : %s --> %s\n" l 
+      (AbEnv.L.to_string (get_abenv s l))
+      (AbEnv.L.to_string (f (get_abenv s l)));*)
+      f (get_abenv s l)
     | (l,f)::q -> 
+      (*Printf.printf "2: %d : %s --> %s\n" l (AbEnv.L.to_string (get_abenv s l))
+	(AbEnv.L.to_string (f (get_abenv s l)));*)
       (* + Should be at most 2 equations.
 	 + One of the equations returns AbEnv.L.bottom 
 	 thanks to the treatment of conditional branches by iter; each branch
@@ -58,7 +63,7 @@ struct
   type strategy =
     | Single of label
     | Seq of strategy * strategy
-    | Branch of label * strategy * strategy
+    | Branch of label * test * strategy * strategy
     | Loop of label * strategy 
 
   let rec gen_strategy = function 
@@ -66,7 +71,7 @@ struct
     | Syntax.Assign (l,x,e) -> Single l
     | Syntax.If (l,t,b1,b2) -> (* Seq (Single l, Seq (gen_strategy b1,
 				  gen_strategy b2)) *)
-      Branch(l, gen_strategy b1, gen_strategy b2)
+      Branch(l, t, gen_strategy b1, gen_strategy b2)
     | Syntax.Fi (l,t,l') -> Single l
     | Syntax.While (l,t,b) -> Loop (l, gen_strategy b)
     | Syntax.Seq (i1,i2) -> Seq (gen_strategy i1, gen_strategy i2)
@@ -76,7 +81,7 @@ struct
   let rec entry  = function
     | Single l -> l
     | Seq (strat1,strat2) -> entry strat1
-    | Branch (l, strat1, strat2) -> l
+    | Branch (l,t,strat1,strat2) -> l
     | Loop (l, strat) -> l
 
   let strategy (p,l) = 
@@ -86,20 +91,22 @@ struct
     match strat with
       | Single l -> 
 	  let new_val = 
-	    (*if l=l0 
+	    if l=l0 
+	    (* No equation is mapped to l0. Do not apply_eq blindly *)
 	    then AbEnv.L.join (AbEnv.init_env ()) (apply_eq s (get_equation sys l))
-	    else *)
+	    else 
 	    apply_eq s (get_equation sys l)
 	  in M.add l new_val s
       | Seq (strat1,strat2) ->
 	iter l0 sys strat2 (iter l0 sys strat1 s (entry strat2)) end_label
-      | Branch (l, strat1,strat2) ->
+      | Branch (l,t,strat1,strat2) ->
 	(* compute "?the AbEnv" at the entrance of the conditional then add it
 	   to the AbEnv map *)
 	let s0 = iter l0 sys (Single l) s l in
 	(* Extract the state at the entrance of the conditional then use it to
 	   iter over both branches with a newly created map of AbEnvs *)
-	let s_init () = M.add l (get_abenv s0 l) (M.empty) in
+	let e_init = get_abenv s0 l in
+	let s_init () = M.add l e_init (M.empty) in
 	let s1 = iter l0 sys (Seq(strat1, Single end_label)) (s_init ()) end_label in
 	let s1' = M.remove l s1 in
 	let s2 = iter l0 sys (Seq(strat2, Single end_label)) (s_init () ) end_label in
@@ -112,26 +119,26 @@ struct
 	  | None, Some y -> Some y
 	  | Some x, Some y when (k = end_label) ->
 	    (* Here should go the abstract semantics of conditionals *)
-	    Some (AbEnv.L.join x y)
+	    Some (AbEnv.forward_if ~l:(Some l) e_init t x y)
 	  | _ -> 
 	    raise (Failure "Two states to merge that are not the immediate postdom!"))
 	in
 	M.merge merge s0 (M.merge merge s1' s2')
       | Loop (l,strat) ->
-	let s = iter  l0 sys (Single l) s end_label in
-	    let rec loop_widen s =
-	      let s' = iter l0 sys (Seq (strat,Single l)) s end_label in
-	      if AbEnv.L.order_dec (get_abenv s' l) (get_abenv s l) then 
-		iter l0 sys strat s end_label
-		else loop_widen (modify s' l (AbEnv.L.widen (get_abenv s l)))
-	    in
-	    let rec loop_narrow s =
-	      let s' = iter l0 sys (Seq (strat,Single l)) s l in
-		if AbEnv.L.order_dec  (get_abenv s l) (get_abenv s' l) then 
-		  iter l0 sys strat s end_label
-		else loop_narrow (modify s' l (AbEnv.L.narrow (get_abenv s l)))
-	    in
-	      loop_narrow (loop_widen s)
+	let s' = iter  l0 sys (Single l) s end_label in
+	let rec loop_widen s =
+	  let s' = iter l0 sys (Seq (strat,Single l)) s end_label in
+	  if AbEnv.L.order_dec (get_abenv s' l) (get_abenv s l) then 
+	    iter l0 sys strat s end_label
+	  else loop_widen (modify s' l (AbEnv.L.widen (get_abenv s l)))
+	in
+	let rec loop_narrow s =
+	  let s' = iter l0 sys (Seq (strat,Single l)) s l in
+	  if AbEnv.L.order_dec  (get_abenv s l) (get_abenv s' l) then 
+	    iter l0 sys strat s end_label
+	  else loop_narrow (modify s' l (AbEnv.L.narrow (get_abenv s l)))
+	in
+	loop_narrow (loop_widen s')
 
   let gen_constraints p =
     List.map
@@ -172,9 +179,10 @@ struct
   let solve p =
     AbEnv.init (Syntax.vars p);
     let l0 = Cfg.entry (fst p) in
+    let s_init = (*M.add l0 (AbEnv.init_env () )*) M.empty in
     let f = get_abenv
       (iter l0 (make_eq_sys (gen_constraints p)) (strategy p)
-	 (M.add l0 (AbEnv.init_env()) M.empty) (snd p)) in
+	 s_init  (snd p)) in
       check p f; f
 
   let solve_and_print p =

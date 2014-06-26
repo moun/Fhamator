@@ -28,8 +28,12 @@ sig
   val backward_comp : Syntax.comp -> L.t -> L.t -> (L.t * L.t)
 
   val forward_binop : l:Syntax.label option -> Syntax.binop -> L.t -> L.t -> L.t  
+   
+  val forward_comp : l:Syntax.label option -> Syntax.comp -> L.t -> L.t -> L.t  
 
   val backward_binop : Syntax.binop -> L.t -> L.t -> L.t -> L.t * L.t
+
+  val forward_if : l:Syntax.label option -> L.t -> L.t -> L.t -> L.t
 
   val const : l:Syntax.label option -> int -> L.t
 
@@ -48,7 +52,11 @@ sig
   val init_env : unit -> L.t
 
   val assign : l:Syntax.label option -> Syntax.var -> Syntax.expr -> L.t -> L.t
-        
+   
+  val forward_if : l:Syntax.label option -> L.t -> Syntax.test -> 
+    L.t -> L.t -> L.t
+    (*AbNum.L.t L.M.t -> AbNum.L.t L.M.t -> AbNum.L.t L.M.t*)
+
   val backward_test : Syntax.test -> L.t -> L.t
 end
 

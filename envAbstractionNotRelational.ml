@@ -45,11 +45,29 @@ struct
     | Initl -> AbNum.initl ~l 
     | Var x -> AbNum.forward_binop ~l Add (L.get env x) (AbNum.const ~l  0) (* TODO *)
     | Binop (op, e1, e2) ->
-      AbNum.forward_binop ~l op (forward_expr ~l env e1) (forward_expr ~l env e2)
+      AbNum.forward_binop ~l op (forward_expr ~l env e1) (forward_expr ~l env
+  e2)
+    | T test ->
+      (match test with
+	| Comp (c, e1, e2) ->
+	  AbNum.forward_comp ~l c 
+	    (forward_expr ~l env e1) 
+	    (forward_expr ~l env e2)
+	| Or (t1, t2) -> AbNum.L.top () (* todo *)
+	| And (t1, t2) -> AbNum.L.top () (* todo *)
+      )
 
   let assign ~l x e env =
     reduce (L.update env x (forward_expr ~l env e))
-        
+     
+  let forward_if ~l env t env1 env2 =
+    let abval_t = forward_expr ~l  env (T t) in
+    try
+      L.M.mapi
+	(fun key v -> AbNum.forward_if ~l abval_t v (L.M.find key env2))
+	env1
+    with Not_found -> assert false
+   
   let rec backward_expr env e n =
     match e with
       | Const n0 ->

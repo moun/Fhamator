@@ -30,10 +30,11 @@ type expr =
   | Initl
   | Var of var
   | Binop of binop * expr * expr
+  | T of test
 
-type comp = Eq | Neq | Le | Lt 
+and comp = Eq | Neq | Le | Lt 
 
-type test =
+and  test =
   | Comp of comp * expr * expr
   | And of test * test
   | Or of test * test

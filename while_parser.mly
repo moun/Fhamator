@@ -102,9 +102,9 @@ instr:
  | IF test block ELSE block 
      { 
        let ifpp = new_pp () in
-       let conditional = Syntax.If (ifpp,$2,$3,$5) in
-       let ipdom = Syntax.Fi (new_pp(), $2, ifpp) in
-       Syntax.Seq (conditional, ipdom) 
+       let conditional = Syntax.If (ifpp,$2,$3,$5) in conditional
+      (* let ipdom = Syntax.Fi (new_pp(), $2, ifpp) in
+       Syntax.Seq (conditional, ipdom) *)
      }
 /* | IF test block            { Syntax.If ($2,$3,Syntax.Skip) } */
  | WHILE test  block        { Syntax.While (new_pp (),$2,$3) }

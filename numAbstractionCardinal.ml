@@ -225,6 +225,14 @@ struct
     | Syntax.Mult -> forward_mult ~l n1 n2
     | Syntax.Rem -> forward_rem ~l n1 n2
 
+  let forward_comp ~l = function (* TODO *)
+    | Syntax.Eq -> forward_binop ~l Syntax.Add
+    | Syntax.Neq -> forward_binop ~l Syntax.Add
+    | Syntax.Lt -> forward_binop ~l Syntax.Add
+    | Syntax.Le -> forward_binop ~l Syntax.Add
+
+  let forward_if ~l cond = L.join (* TODO *)
+
   let backward_binop = function
     | Syntax.Add -> backward_add
     | Syntax.Sub -> backward_sub
