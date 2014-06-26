@@ -44,17 +44,18 @@ struct
   let rec apply_eq s = function
     | [] -> AbEnv.L.bottom ()
     | [l,f] -> f (get_abenv s l)
-    | (l,f) :: (l',f') :: [] as eqs -> 
-      List.fold_left 
-	(fun acc (l,f) -> (get_absenv s l))
-    | (l,f)::q -> (* Oh the join! *)
+    | (l,f)::q -> 
+      (* + Should be at most 2 equations.
+	 + One of the equations returns AbEnv.L.bottom 
+	 thanks to the treatment of conditional branches by iter; each branch
+	 only knows about the state s concerning the current path
+       *)
       AbEnv.L.join (f (get_abenv s l)) (apply_eq s q)
 
   let modify s k f =
     M.add k (f (get_abenv s k)) s
       
   type strategy =
-    | Empty
     | Single of label
     | Seq of strategy * strategy
     | Branch of label * strategy * strategy
@@ -72,38 +73,55 @@ struct
     | Syntax.Inputh (l,_lvars) -> Single l (* TODO *)
     | Syntax.Inputl (l, _lvars) -> Single l (* TODO *)
 
+  let rec entry  = function
+    | Single l -> l
+    | Seq (strat1,strat2) -> entry strat1
+    | Branch (l, strat1, strat2) -> l
+    | Loop (l, strat) -> l
+
   let strategy (p,l) = 
     Seq (gen_strategy p,Single l)
 
-  let rec iter l0 sys strat s =
+  let rec iter l0 sys strat s end_label  =
     match strat with
-      | Empty ->  s
       | Single l -> 
 	  let new_val = 
-	    if l=l0 
+	    (*if l=l0 
 	    then AbEnv.L.join (AbEnv.init_env ()) (apply_eq s (get_equation sys l))
-	    else apply_eq s (get_equation sys l)
+	    else *)
+	    apply_eq s (get_equation sys l)
 	  in M.add l new_val s
       | Seq (strat1,strat2) ->
-	   iter l0 sys strat2 (iter l0 sys strat1 s)
+	iter l0 sys strat2 (iter l0 sys strat1 s (entry strat2)) end_label
       | Branch (l, strat1,strat2) ->
 	(* compute "?the AbEnv" at the entrance of the conditional then add it
 	   to the AbEnv map *)
-	let s0 = iter l0 sys (Single l) s in
+	let s0 = iter l0 sys (Single l) s l in
 	(* Extract the state at the entrance of the conditional then use it to
 	   iter over both branches with a newly created map of AbEnvs *)
-	let s_init = M.add l (get_abenv s0 l) (M.empty) in
-	let s1 = iter l0 sys strat2 s_init in
-	let s2 = iter l0 sys strat2 s_init in
+	let s_init () = M.add l (get_abenv s0 l) (M.empty) in
+	let s1 = iter l0 sys (Seq(strat1, Single end_label)) (s_init ()) end_label in
+	let s1' = M.remove l s1 in
+	let s2 = iter l0 sys (Seq(strat2, Single end_label)) (s_init () ) end_label in
+	let s2' = M.remove l s2 in
+	let merge k xo yo = (match xo,yo with
+	  (* an invariant for both maps :
+	     - for all keys k, there is a binding in m1 or exclusively in m2,
+	     unless k is an immediate postdominator of a branch *)
+	  | Some x, None -> Some x
+	  | None, Some y -> Some y
+	  | Some x, Some y when (k = end_label) ->
+	    (* Here should go the abstract semantics of conditionals *)
+	    Some (AbEnv.L.join x y)
+	  | _ -> 
+	    raise (Failure "Two states to merge that are not the immediate postdom!"))
+	in
+	M.merge merge s1' s2'
 	(* Now, we've got the map of AbEnvs for both branches *)
 	(* This is infortunate... The states are computed over both branches
 	   but they do not get merged until we arrive at the merge point.
 	   Grrrr!!!! 
-	   There's actually more.
-	   I'm feeling that at the immediate post dom, this implementation uses
-	   the fact that computing the abstract semantics over both states then
-	   merging is the same as merging before computing the abstract
-	   semantics.
+	   The key point: abstract envs are mapped to labels, not instructions
 	*)
 	(* Seems there's quiet some differences between WA and MITA, let aside
 	   the design choices.
@@ -115,22 +133,24 @@ struct
 	   abstract states, which is usually what's done in a small step
 	   semantics when more information is necessary.
 	*)
-	s1 (** euh, need to merge those! The great thing about how it is done
-	       now, is that it does not assume anything about the CFG.
-	       Yet, it works... not sure If I am gonna be able to carry on...
-	       Oh! Generate another set of constraints having a completely
-	       different signature right ??
-	   **)
+      (** euh, need to merge those! The great thing about how it is done
+	  now, is that it does not assume anything about the CFG.
+	  Yet, it works... not sure If I am gonna be able to carry on...
+	  Oh! Generate another set of constraints having a completely
+	  different signature right ??
+      **)
       | Loop (l,strat) ->
-	  let s = iter  l0 sys (Single l) s in
+	let s = iter  l0 sys (Single l) s end_label in
 	    let rec loop_widen s =
-	      let s' = iter l0 sys (Seq (strat,Single l)) s in
-		if AbEnv.L.order_dec (get_abenv s' l) (get_abenv s l) then iter l0 sys strat s
+	      let s' = iter l0 sys (Seq (strat,Single l)) s end_label in
+	      if AbEnv.L.order_dec (get_abenv s' l) (get_abenv s l) then 
+		iter l0 sys strat s end_label
 		else loop_widen (modify s' l (AbEnv.L.widen (get_abenv s l)))
 	    in
 	    let rec loop_narrow s =
-	      let s' = iter l0 sys (Seq (strat,Single l)) s in
-		if AbEnv.L.order_dec  (get_abenv s l) (get_abenv s' l) then iter l0 sys strat s
+	      let s' = iter l0 sys (Seq (strat,Single l)) s l in
+		if AbEnv.L.order_dec  (get_abenv s l) (get_abenv s' l) then 
+		  iter l0 sys strat s end_label
 		else loop_narrow (modify s' l (AbEnv.L.narrow (get_abenv s l)))
 	    in
 	      loop_narrow (loop_widen s)
@@ -173,8 +193,10 @@ struct
 
   let solve p =
     AbEnv.init (Syntax.vars p);
+    let l0 = Cfg.entry (fst p) in
     let f = get_abenv
-	      (iter (Cfg.entry (fst p)) (make_eq_sys (gen_constraints p)) (strategy p) M.empty) in
+      (iter l0 (make_eq_sys (gen_constraints p)) (strategy p)
+	 (M.add l0 (AbEnv.init_env()) M.empty) (snd p)) in
       check p f; f
 
   let solve_and_print p =
