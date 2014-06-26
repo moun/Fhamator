@@ -99,7 +99,13 @@ instr:
  | SKIP                     { Syntax.Skip (new_pp ())}
 /* | ASSERT test            { Syntax.Assert ($2 var_tab) } 
  | ENSURE test              { Syntax.Ensure ($2 var_tab) } */
- | IF test block ELSE block { Syntax.If (new_pp (),$2,$3,$5) }
+ | IF test block ELSE block 
+     { 
+       let ifpp = new_pp () in
+       let conditional = Syntax.If (ifpp,$2,$3,$5) in
+       let ipdom = Syntax.Fi (new_pp(), $2, ifpp) in
+       Syntax.Seq (conditional, ipdom) 
+     }
 /* | IF test block            { Syntax.If ($2,$3,Syntax.Skip) } */
  | WHILE test  block        { Syntax.While (new_pp (),$2,$3) }
  | FOR LP IDENT ASSIGN expr PVL test PVL expr RP block

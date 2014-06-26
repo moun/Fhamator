@@ -23,6 +23,7 @@ open Syntax
 type instr =
   | Assign of var * expr
   | Assert of test
+  | Fi of test * label
   | Input of var list * expr     
 
 module S = Set.Make (struct type t = label * instr * label let compare = compare end)
@@ -31,6 +32,7 @@ let rec entry = function
   | Syntax.Assign (l,x,e) -> l
   | Skip l -> l
   | If (l,t,i1,i2) -> l
+  | Fi (l,t,l') -> l
   | While (l,t,i)  -> l
   | Seq (i1,i2) -> entry i1
   | Inputh (l, _lvars) -> l 
@@ -54,6 +56,7 @@ let rec cfg end_label = function
       S.add (l,Assert t,entry i1) 
 	(S.add (l,Assert (neg_test t),entry i2)  
 	   (S.union (cfg end_label i1) (cfg end_label i2)))
+  | Fi (l,t,l') -> S.add (l, Fi (t,l'), end_label) S.empty
   | While (l,t,i)  ->
       S.add (l,Assert t,entry i) 
 	(S.add (l,Assert (neg_test t),end_label) (cfg l i))
@@ -71,6 +74,7 @@ let print_cfg p =
 	 (match i with
 	    | Assign (x,e) -> Printf.sprintf "%s := %s" x ((Print.print_expr e))
 	    | Assert t -> Print.print_test t
+	    | Fi (t, l) -> Printf.sprintf "Fi %s %d" ((Print.print_test t)) l
 	    | Input (lvars, e) ->
 		Printf.sprintf "%s %s" 
 		(List.fold_left (fun accu x -> Printf.sprintf "%s, %s" accu x)

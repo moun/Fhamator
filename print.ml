@@ -103,6 +103,7 @@ let rec print_instr tab f idt end_block = function
         pt (print_instr tab f (idt^ident) "\n" b1) idt
         (print_instr tab f (idt^ident) "\n" b2) idt
 	end_block
+  | Fi (l,e,lif) -> sprintf  "%s%sfi%s" (f idt l) idt end_block
   | While (l,t,b)  -> let pt = print_test tab t in
       sprintf "%s%swhile %s {\n%s%s}%s" (f idt l) idt pt
         (print_instr tab f (idt^ident) "\n" b) idt end_block

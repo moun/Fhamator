@@ -38,6 +38,7 @@ type stmt =
     Assign of label * var * expr
   | Skip of label
   | If of label * test * stmt * stmt
+  | Fi of label * test * label
   | While of label * test * stmt
   | Seq of stmt * stmt
   | Inputh of label * var list

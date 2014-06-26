@@ -42,6 +42,7 @@ type stmt =
   | Assign of label * var * expr
   | Skip of label
   | If of label * test * stmt * stmt
+  | Fi of label *  test * label
   | While of label * test *stmt
   | Seq of stmt * stmt
   | Inputh of label * var list
@@ -71,6 +72,7 @@ let rec var_stmt s = function
   | Skip l -> s
   | Assign (l,x,e) -> S.add x (var_expr s e)
   | If (l,t,b1,b2) -> var_test (var_stmt (var_stmt s b1) b2) t
+  | Fi (l,e,lif) -> s
   | While (l,t,b) -> var_test (var_stmt s b) t
   | Seq (i1,i2) -> var_stmt (var_stmt s i1) i2
   | Inputh (l, lvars)
