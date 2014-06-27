@@ -134,9 +134,32 @@ struct
 		in 
 		accu ^ string_elt) s "")
 	in
+	let pretty card =
+	  (* popcount returns an int, expects a non-negative *)
+	  let is_pow2  n = (1 = Z.popcount n) in
+	  let pow2 z = 
+	    let rec rec_pow2 accu z = 
+	      if (Z.equal Z.zero z) then 
+		accu
+	      else 
+		rec_pow2 (accu+1) (Z.divexact z (Z.of_int 2))
+	    in
+	    rec_pow2 0 z
+	  in
+	  if (Z.leq card (Z.of_int 10)) then
+	    "0"
+	  else if (is_pow2 card) then
+	    Printf.sprintf "2^%d" (pow2 card)
+	  else if (is_pow2 (Z.succ card)) then
+	    Printf.sprintf "2^%d -1" (pow2 (Z.succ card))
+	  else if (is_pow2 (Z.pred card)) then
+	    Printf.sprintf "2^%d +1"  (pow2 (Z.pred card))
+	  else 
+	    Z.to_string card
+	in 
 	Printf.sprintf "({ %s }, %s)" 
 	  (label_set_to_string ppset) 
-	  (Z.to_string card) 
+	  (pretty card) 
 	
   end 
     
