@@ -1,6 +1,8 @@
 module Make : 
   functor(AbNum1:Abstraction.Num) ->
     functor(AbNum2:Abstraction.Num) ->
+      functor( Red12: 
+	sig type t = AbNum1.L.t * AbNum2.L.t  val reduce : t -> t end) ->
       sig
 
 	module L :

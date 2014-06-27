@@ -21,19 +21,22 @@
 module Sign = 
   Analyse.Make(EnvAbstractionNotRelational.Make(NumAbstractionSign.Make))
 
+module NumInterval = NumAbstractionInterval.Make
 module Interval = 
-  Analyse.Make(EnvAbstractionNotRelational.Make(NumAbstractionInterval.Make))
+  Analyse.Make(EnvAbstractionNotRelational.Make(NumInterval))
 
+module NumCardinal = NumAbstractionCardinal.Make
 module Cardinal = 
-  Analyse.Make(EnvAbstractionNotRelational.Make(NumAbstractionCardinal.Make))
+  Analyse.Make(EnvAbstractionNotRelational.Make(NumCardinal))
+
+
+module RedIntervalCardinal = 
+struct type t = NumInterval.L.t * NumCardinal.L.t  let reduce = (fun x -> x) end
 
 module IntervalCardinal = 
   Analyse.Make(
     EnvAbstractionNotRelational.Make(
-      Reducedprod.Make 
-	(NumAbstractionCardinal.Make) 
-	(NumAbstractionInterval.Make)
-  ))
+      Reducedprod.Make (NumInterval) (NumCardinal) (RedIntervalCardinal)))
 
 type mode = Parse | Cfg | Sign | Interval | Cardinal | IntervalCardinal
 

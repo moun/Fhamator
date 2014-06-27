@@ -3,6 +3,7 @@
 module Make =
   functor (AbNum1:Abstraction.Num) ->
     functor (AbNum2:Abstraction.Num  ) ->
+      functor (Red12:  sig  type t val reduce: t -> t end) ->
 struct
   
   module Lat = Latticeprod.Make (AbNum1.L) (AbNum2.L)
