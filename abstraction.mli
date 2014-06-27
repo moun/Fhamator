@@ -42,6 +42,12 @@ sig
   val inith :l:Syntax.label option -> L.t
 end
 
+module type NumProd =
+sig
+  include Num
+  val reduce : L.t -> L.t
+end
+
 (** numeric abstraction of environments *)
 module type Env =  
 sig 

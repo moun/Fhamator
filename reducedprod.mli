@@ -33,4 +33,6 @@ module Make :
 	val initl : l:Syntax.label option -> L.t 
 	  
 	val inith :l:Syntax.label option -> L.t
+	  
+	val reduce : L.t -> L.t
       end
