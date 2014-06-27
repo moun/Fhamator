@@ -147,7 +147,7 @@ struct
 	    rec_pow2 0 z
 	  in
 	  if (Z.leq card (Z.of_int 10)) then
-	    "0"
+	    Z.to_string card
 	  else if (is_pow2 card) then
 	    Printf.sprintf "2^%d" (pow2 card)
 	  else if (is_pow2 (Z.succ card)) then
@@ -159,8 +159,7 @@ struct
 	in 
 	Printf.sprintf "({ %s }, %s)" 
 	  (label_set_to_string ppset) 
-	  (pretty card) 
-	
+	  (pretty card)
   end 
     
   let backward_eq n1 n2 =
