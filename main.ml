@@ -24,6 +24,12 @@ module Interval = Analyse.Make(EnvAbstractionNotRelational.Make(NumAbstractionIn
 
 module Cardinal = Analyse.Make(EnvAbstractionNotRelational.Make(NumAbstractionCardinal.Make))
 
+(*module CardInterval =
+  Analyse.Make(
+    EnvAbstractionNotRelational.Make(
+      Reducedprod.Make	(NumAbstractionCardinal.make)	(NumAbstractionInterval.Make)
+    )) *)
+
 type mode = Parse | Cfg | Sign | Interval | Cardinal
 
 let mode = ref Interval
