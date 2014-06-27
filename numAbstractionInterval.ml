@@ -279,7 +279,7 @@ struct
     | Syntax.Lt -> forward_binop ~l Add
     | Syntax.Le -> forward_binop ~l Add
 
-  let forward_if ~l cond = L.join 
+  let forward_if ~l cond labels = L.join 
 
   let reduce a b =
     if le_test a b then Some ((a, b)) else None

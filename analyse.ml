@@ -84,6 +84,17 @@ struct
     | Branch (l,t,strat1,strat2) -> l
     | Loop (l, strat) -> l
 
+  let labels_in_strat strat =
+    let rec rec_labels list = 
+      function
+	| Single l -> l :: list
+	| Seq (strat1,strat2) -> rec_labels (rec_labels list strat1) strat2
+	| Branch(l,t,strat1,strat2) -> 
+	  rec_labels (rec_labels (l :: list) strat1) strat2
+	| Loop(l,strat) -> rec_labels (l :: list) strat
+    in
+    rec_labels [] strat
+
   let strategy (p,l) = 
     Seq (gen_strategy p,Single l)
 
@@ -111,6 +122,9 @@ struct
 	let s1' = M.remove l s1 in
 	let s2 = iter l0 sys (Seq(strat2, Single end_label)) (s_init () ) end_label in
 	let s2' = M.remove l s2 in
+	(* This is starting to look awfully painful. 
+	   Also, should be labels_in_instr... *)
+	let labels = labels_in_strat (Seq(strat1,strat2)) in
 	let merge k xo yo = (match xo,yo with
 	  (* an invariant for both maps :
 	     - for all keys k, there is a binding in m1 or exclusively in m2,
@@ -119,7 +133,7 @@ struct
 	  | None, Some y -> Some y
 	  | Some x, Some y when (k = end_label) ->
 	    (* Here should go the abstract semantics of conditionals *)
-	    Some (AbEnv.forward_if ~l:(Some l) e_init t x y)
+	    Some (AbEnv.forward_if ~l:(Some l) e_init t labels x y)
 	  | _ -> 
 	    raise (Failure "Two states to merge that are not the immediate postdom!"))
 	in

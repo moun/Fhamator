@@ -33,7 +33,7 @@ sig
 
   val backward_binop : Syntax.binop -> L.t -> L.t -> L.t -> L.t * L.t
 
-  val forward_if : l:Syntax.label option -> L.t -> L.t -> L.t -> L.t
+  val forward_if : l:Syntax.label option -> L.t -> Syntax.label list -> L.t -> L.t -> L.t
 
   val const : l:Syntax.label option -> int -> L.t
 
@@ -54,7 +54,7 @@ sig
   val assign : l:Syntax.label option -> Syntax.var -> Syntax.expr -> L.t -> L.t
    
   val forward_if : l:Syntax.label option -> L.t -> Syntax.test -> 
-    L.t -> L.t -> L.t
+    Syntax.label list -> L.t -> L.t -> L.t
     (*AbNum.L.t L.M.t -> AbNum.L.t L.M.t -> AbNum.L.t L.M.t*)
 
   val backward_test : Syntax.test -> L.t -> L.t

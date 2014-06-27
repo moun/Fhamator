@@ -65,47 +65,39 @@ struct
 	  (order_dec_labels ppsetx ppsety)
 	  && (order_dec_cardinals cardinalx cardinaly))
      
-	
-    let join x y =
-      let join_labels ppsetx ppsety =
-	match ppsetx with
+    let join_labels ppsetx ppsety =
+      match ppsetx with
 	| Top -> Top
 	| Set sx ->
 	  (match ppsety with
-	  | Top -> Top
-	  | Set sy -> Set (Label_Set.union sx sy))
-      in
-      let join_cardinals cardx cardy = Z.max cardx cardy 
-	(*let sum = (Z.add cardx cardy) in (*  TODO : this is not right! *)
-	if (Z.gt sum cardinal_top) then
-	  cardinal_top
-	else
-	  sum *)
-      in (* This is the transfer function for conditionals *)
+	    | Top -> Top
+	    | Set sy -> Set (Label_Set.union sx sy))
+    let join_cardinals cardx cardy = Z.max cardx cardy 
+
+    let join x y =
+      (* This is the transfer function for conditionals *)
       match x,y with
 	| (ppsetx,cardx),(ppsety,cardy) -> 
 	  join_labels ppsetx ppsety,
 	  join_cardinals cardx cardy
 	  
-	
-    let meet x y =
-      let meet_labels ppsetx ppsety =
-	match ppsetx with
+    let  meet_labels ppsetx ppsety =
+      match ppsetx with
 	| Top -> ppsety
 	| Set sx ->
 	  (match ppsety with
-	  | Top -> ppsetx
-	  | Set sy -> Set (Label_Set.inter sx sy))
-      in
-      let meet_cardinals cardx cardy =
-	Z.min cardx cardy
-      in
+	    | Top -> ppsetx
+	    | Set sy -> Set (Label_Set.inter sx sy))
+
+    let meet_cardinals cardx cardy = Z.min cardx cardy
+	
+    let meet x y =
       match x,y with
-      | (ppsetx, cardx), (ppsety,cardy) ->
-	meet_labels ppsetx ppsety,
-	meet_cardinals cardx cardy
+	| (ppsetx, cardx), (ppsety,cardy) ->
+	  meet_labels ppsetx ppsety,
+	  meet_cardinals cardx cardy
     (* TODO : be quiet wary! the meet over sets of labels can be
-      treacherous... e.g: conditional tests reduction! *)
+       treacherous... e.g: conditional tests reduction! *)
 	
     let widen = join
     let narrow x y = x (* TODO : Revet *)
@@ -114,10 +106,14 @@ struct
       
     let top () = Top, cardinal_top
 
-    let is_bottom = function
-      | Top, _ -> false
-      | Set s, card -> (Label_Set.is_empty s) && (Z.equal Z.zero card)
+    let is_bottom_labels = function
+      | Top -> false
+      | Set s -> Label_Set.is_empty s
+	
+    let is_bottom_cardinals = Z.equal Z.zero
 
+    let is_bottom (label, card) =  
+      (is_bottom_labels label) && (is_bottom_cardinals card)
     
       
     let to_string = function
@@ -231,7 +227,34 @@ struct
     | Syntax.Lt -> forward_binop ~l Syntax.Add
     | Syntax.Le -> forward_binop ~l Syntax.Add
 
-  let forward_if ~l cond = L.join (* TODO *)
+  let add_c labels x y =
+    match x,y with
+      | (ppsetx, cardx),(ppsety,cardy) ->
+	let labels_instr = 
+	  List.fold_left (fun set elt -> Label_Set.add elt set) Label_Set.empty labels 
+	in
+        let labels_def = L.join_labels ppsetx ppsety in
+	let card = 
+	  if (L.is_bottom_labels (L.meet_labels (Set labels_instr) labels_def))
+	  then
+	    L.join_cardinals cardx cardy
+	  else
+            let sum = (Z.add cardx cardy) in 
+	    if (Z.gt sum cardinal_top) then cardinal_top else  sum
+	in
+	labels_def, card
+
+	
+
+  let forward_if ~l cond labels = 
+    if (match cond with
+      | _, card when (Z.equal card Z.one) -> true 
+      | _ -> false )
+    then
+      L.join
+    else 
+      add_c labels
+      
 
   let backward_binop = function
     | Syntax.Add -> backward_add
