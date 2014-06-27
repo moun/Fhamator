@@ -18,19 +18,24 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *)
 
-module Sign = Analyse.Make(EnvAbstractionNotRelational.Make(NumAbstractionSign.Make))
+module Sign = 
+  Analyse.Make(EnvAbstractionNotRelational.Make(NumAbstractionSign.Make))
 
-module Interval = Analyse.Make(EnvAbstractionNotRelational.Make(NumAbstractionInterval.Make))
+module Interval = 
+  Analyse.Make(EnvAbstractionNotRelational.Make(NumAbstractionInterval.Make))
 
-module Cardinal = Analyse.Make(EnvAbstractionNotRelational.Make(NumAbstractionCardinal.Make))
+module Cardinal = 
+  Analyse.Make(EnvAbstractionNotRelational.Make(NumAbstractionCardinal.Make))
 
-(*module CardInterval =
+module IntervalCardinal = 
   Analyse.Make(
     EnvAbstractionNotRelational.Make(
-      Reducedprod.Make	(NumAbstractionCardinal.make)	(NumAbstractionInterval.Make)
-    )) *)
+      Reducedprod.Make 
+	(NumAbstractionCardinal.Make) 
+	(NumAbstractionInterval.Make)
+  ))
 
-type mode = Parse | Cfg | Sign | Interval | Cardinal
+type mode = Parse | Cfg | Sign | Interval | Cardinal | IntervalCardinal
 
 let mode = ref Interval
 let target = ref ""
@@ -41,7 +46,10 @@ let args = [
   ("-sign", Arg.Unit (fun () -> mode := Sign) , "Sign analysis");
   ("-interval", Arg.Unit (fun () -> mode := Sign) , "Interval analysis");
   ("-card", Arg.Unit (fun () -> mode := Cardinal), "Cardinal analysis");
-  ("-reduce", Arg.Unit (fun () -> EnvAbstractionNotRelational.reduction := true) , "Reduction operator for non-relational environment abstractions");
+  ("-cardinterval", Arg.Unit (fun () -> mode := IntervalCardinal), 
+   "Interval & Cardinal analysis");
+  ("-reduce", Arg.Unit (fun () -> EnvAbstractionNotRelational.reduction :=true),
+   "Reduction operator for non-relational environment abstractions");
 ]
 
 let _ =
@@ -63,6 +71,10 @@ let _ =
 	  | Interval ->
 	      let p = Parse.parse !target in
 	      let res = Interval.solve_and_print p in
+		print_string (Print.print_program_with_res p res)
+	  | IntervalCardinal ->
+	    let p = Parse.parse !target in
+	      let res = IntervalCardinal.solve_and_print p in
 		print_string (Print.print_program_with_res p res)
       with x -> Printf.printf "uncaught exception %s\n" (Printexc.to_string x) 
     end
