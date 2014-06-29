@@ -88,6 +88,9 @@ let print_res f idt p  =
 
 let print_pp idt = sprintf "(%d) "
 
+let print_res_pp f idt p =
+  sprintf  "                                      // %s\n(%d) " (f p) p
+
 let ident = "  "
 
 let rec print_instr tab f idt end_block = function
@@ -115,11 +118,13 @@ let print_expr = print_expr (fun x -> x) No true false
 let print_test = print_test (fun x -> x)
 
 let print_program f (p,l) = 
-  sprintf "%s\n%s\n"
+  sprintf "%s\n%s\n" 
     (print_instr (fun x -> x) f "" "" p) 
     (f "" l)
 
 let print_program_with_res p res = print_program (print_res res) p
+
+let print_program_with_res p res = print_program (print_res_pp res) p
 
 let print_program = print_program print_pp
 
