@@ -43,7 +43,7 @@ struct
     | Const n -> AbNum.const ~l n
     | Unknown -> AbNum.inith ~l 
     | Initl -> AbNum.initl ~l 
-    | Var x -> L.get env x
+    | Var x -> AbNum.forward_binop ~l Add (L.get env x) (AbNum.const ~l  0) (* TODO *)
     | Binop (op, e1, e2) ->
       AbNum.forward_binop ~l op (forward_expr ~l env e1) (forward_expr ~l env e2)
 
