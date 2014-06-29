@@ -145,7 +145,7 @@ struct
   end 
     
   let backward_eq n1 n2 =
-    ((L.meet n1 n2), (L.meet n1 n2))
+    n1,n2 (* TODO *)
       
   let backward_neq n1 n2 =
     (n1, n2)
