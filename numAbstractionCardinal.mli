@@ -19,4 +19,5 @@
  *)
 
 (** Numeric abstraction by signs *)
-module Make : Abstraction.Num
+
+module Make : NumAbstractions.Cardinal

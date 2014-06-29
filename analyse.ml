@@ -109,7 +109,10 @@ struct
 	    apply_eq s (get_equation sys l)
 	  in M.add l new_val s
       | Seq (strat1,strat2) ->
-	iter l0 sys strat2 (iter l0 sys strat1 s (entry strat2)) end_label
+	let s =  (iter l0 sys strat1 s (entry strat2)) in
+	let env = get_abenv s (entry strat2) in
+	Printf.printf "env before seq %s \n" (AbEnv.L.to_string env);
+	iter l0 sys strat2 s end_label
       | Branch (l,t,strat1,strat2) ->
 	(* compute "?the AbEnv" at the entrance of the conditional then add it
 	   to the AbEnv map *)
@@ -137,7 +140,10 @@ struct
 	  | _ -> 
 	    raise (Failure "Two states to merge that are not the immediate postdom!"))
 	in
-	M.merge merge s0 (M.merge merge s1' s2')
+	let s = M.merge merge s0 (M.merge merge s1' s2') in
+	let ipdomenv = get_abenv s end_label in
+	Printf.printf " env at ipdom %s \n" (AbEnv.L.to_string ipdomenv);
+	s
       | Loop (l,strat) ->
 	let s' = iter  l0 sys (Single l) s end_label in
 	let rec loop_widen s =

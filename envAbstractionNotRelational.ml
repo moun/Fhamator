@@ -62,6 +62,11 @@ struct
      
   let forward_if ~l env t labels env1 env2 =
     let abval_t = forward_expr ~l  env (T t) in
+    (match l with
+      | Some l ->
+	Printf.printf "at label %d, %s \n" l (AbNum.L.to_string abval_t)
+      | None ->
+	Printf.printf "at label unknown, %s \n" (AbNum.L.to_string abval_t));
     try
       L.M.mapi
 	(fun key v -> AbNum.forward_if ~l abval_t labels  v (L.M.find key env2))

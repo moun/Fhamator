@@ -71,7 +71,8 @@ struct
 	| Set sx ->
 	  (match ppsety with
 	    | Top -> Top
-	    | Set sy -> Set (Label_Set.union sx sy))
+	    | Set sy -> 
+	      Set (Label_Set.union sx sy))
     let join_cardinals cardx cardy = Z.max cardx cardy 
 
     let join x y =
@@ -259,11 +260,16 @@ struct
 	let card = 
 	  if (L.is_bottom_labels (L.meet_labels (Set labels_instr) labels_def))
 	  then
-	    L.join_cardinals cardx cardy
+	    (Printf.printf "joining cardinals for unmodified var: %s %s\n "
+	      (L.to_string x) (L.to_string y);
+	    L.join_cardinals cardx cardy)
 	  else
-            let sum = (Z.add cardx cardy) in 
-	    if (Z.gt sum cardinal_top) then cardinal_top else  sum
+            (let sum = (Z.add cardx cardy) in
+	     Printf.printf "summing  cardinals for possibly modified var: %s %s\n"
+	       (L.to_string x) (L.to_string y);
+	     if (Z.gt sum cardinal_top) then cardinal_top else  sum)
 	in
+	Printf.printf "  computed cardinal %s \n" (L.to_string 	(labels_def, card));
 	labels_def, card
 
 	
@@ -273,7 +279,8 @@ struct
       | _, card when (Z.equal card Z.one) -> true 
       | _ -> false )
     then
-      L.join
+      (Printf.printf "forward if join %s\n" (L.to_string cond);
+      L.join)
     else 
       add_c labels
       

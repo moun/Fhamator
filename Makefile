@@ -8,13 +8,15 @@ SRCML= syntax.ml print.ml while_parser.ml while_lexer.ml parse.ml \
        envAbstractionNotRelational.ml \
        latticeprod.ml reducedprod.ml \
        numAbstractionSign.ml numAbstractionInterval.ml \
-       numAbstractionCardinal.ml main.ml
+       numAbstractionCardinal.ml reduction.ml main.ml
 SRCMLI= syntax.mli print.mli parse.mli cfg.mli lattice.mli \
 		abstraction.mli envLattice.mli analyse.mli \
 		envAbstractionNotRelational.mli \
 		latticeprod.mli reducedprod.mli \
+		numAbstractions.mli \
 		numAbstractionSign.mli numAbstractionInterval.mli \
-		numAbstractionCardinal.mli main.mli
+		numAbstractionCardinal.mli \
+		main.mli
 
 analyse : all
 	@echo "[ocamlc -o analyse] "

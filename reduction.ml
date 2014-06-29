@@ -13,8 +13,8 @@ module NumSign = NumAbstractionSign.Make
   end*)
 
 module RedAB =
-  functor (A: Abstraction.Num) -> 
-    functor (B: Abstraction.Num) ->
+  functor (A: NumAbstractions.Interval ) -> 
+    functor (B: NumAbstractions.Cardinal ) ->
       functor (Q: sig val reduce : A.L.t * B.L.t -> A.L.t * B.L.t end) ->
 struct
   type t = A.L.t * B.L.t
@@ -34,7 +34,29 @@ module RedIntervalCardinal =
   RedAB
     (NumInterval) 
     (NumCardinal)
-    (struct let reduce = (fun (a,b) -> (a,b)) end)
+    (struct
+      let reduce (i,c) =
+          match i with 
+	    | None -> None, NumCardinal.L.bottom ()
+	    | Some (NumInterval.Z a0, NumInterval.Z a1) ->
+	      (match c with
+		| ppset, card ->
+		  if (NumCardinal.L.is_bottom c) then
+		    (Printf.printf "reducing to bottom. Card: %b \n" (NumCardinal.L.is_bottom c);
+		    None, NumCardinal.L.bottom())
+		  else if
+		      (Z.lt 
+			 (Z.succ (Z.of_string (Num.string_of_num (Num.sub_num a1 a0))))
+			 card) 
+		  then
+		    ( Printf.printf "reducing card wrt interval length \n";
+		      i, (ppset, Z.succ (Z.of_string (Num.string_of_num (Num.sub_num a1 a0))))
+		    )
+		  else
+		    i,c
+	      )
+	    | _ -> (i,c)
+     end)
 
 module IntervalCardinal = 
       Reducedprod.Make (NumInterval) (NumCardinal) (RedIntervalCardinal)

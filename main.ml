@@ -36,7 +36,7 @@ struct type t = NumInterval.L.t * NumCardinal.L.t  let reduce = (fun x -> x) end
 module IntervalCardinal = 
   Analyse.Make(
     EnvAbstractionNotRelational.Make(
-      Reducedprod.Make (NumInterval) (NumCardinal) (RedIntervalCardinal)))
+      Reducedprod.Make (NumInterval) (NumCardinal) (Reduction.RedIntervalCardinal)))
 
 type mode = Parse | Cfg | Sign | Interval | Cardinal | IntervalCardinal
 
