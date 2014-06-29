@@ -143,20 +143,25 @@ struct
 	s
       | Loop (l,strat) ->
 	(* TODO : check end_label *)
-	let s = iter l0 sys (Single l) s (entry strat) in
+	(*let s = iter l0 sys (Single l) s (entry strat) in*)
 	let rec loop_widen s =
-	  let s' = iter l0 sys strat s l in
+	  let s'' = iter l0 sys (Single l) s (entry strat) in
+	  let s' = iter l0 sys strat s'' l in
 	  if AbEnv.L.order_dec (get_abenv s' l) (get_abenv s l) then 
-	    iter l0 sys strat s l
+	    let s = iter l0 sys strat s'' l
+	    in M.add l (get_abenv s'' l) s
 	  else loop_widen (modify s' l (AbEnv.L.widen (get_abenv s l)))
 	in
 	let rec loop_narrow s =
-	  let s' = iter l0 sys strat s l in
+	  let s'' = iter l sys (Single l) s (entry strat) in
+	  let s' = iter l0 sys strat s'' l in
 	  if AbEnv.L.order_dec  (get_abenv s l) (get_abenv s' l) then 
-	    iter l0 sys strat s l
+	    let s = iter l0 sys strat s'' l in
+	    M.add l (get_abenv s'' l) s
 	  else loop_narrow (modify s' l (AbEnv.L.narrow (get_abenv s l)))
 	in
-	loop_narrow (loop_widen s)
+	let s = loop_narrow (loop_widen s) in
+	iter l sys (Single l) s end_label
 
   let gen_constraints p =
     List.map
