@@ -137,7 +137,8 @@ struct
 	  | _ -> 
 	    raise (Failure "Two states to merge that are not the immediate postdom!"))
 	in
-	let s = M.merge merge s (M.merge merge s1' s2') in
+	let merged = (M.merge merge s1' s2') in
+	let s = M.fold (fun key v -> M.add key v) merged s in
 	let ipdomenv = get_abenv s end_label in
 	Printf.printf " env at ipdom %s \n" (AbEnv.L.to_string ipdomenv);
 	s
