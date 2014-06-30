@@ -125,7 +125,7 @@ let print_program f (p,l) =
 
 let print_program_with_res p res = print_program (print_res res) p
 
-let print_program_with_res p res = print_program (print_res_pp res) p
+let print_program_with_res p res = print_program (print_res res) p
 
 let print_program = print_program print_pp
 

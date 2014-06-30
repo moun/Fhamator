@@ -101,13 +101,18 @@ struct
   let rec iter l0 sys strat s end_label  =
     match strat with
       | Single l -> 
-	  let new_val = apply_eq s (get_equation sys end_label)
+	  let new_val = 
+	    if (l0 = end_label) then
+	      AbEnv.L.join (AbEnv.init_env()) (apply_eq s (get_equation sys end_label))
+	    else
+	      apply_eq s (get_equation sys end_label)
 	  in M.add end_label new_val s
       | Seq (strat1,strat2) ->
 	let s =  iter l0 sys strat1 s (entry strat2) in
 	let env = get_abenv s (entry strat2) in
-	Printf.printf "env before seq %s \n" (AbEnv.L.to_string env);
-	iter (entry strat2) sys strat2 s end_label
+	(*Printf.printf "env before seq %s %d \n" (AbEnv.L.to_string env) 
+	  (entry strat2);*)
+	iter l0 sys strat2 s end_label
       | Branch (l,t,strat1,strat2) ->
 	(* compute "?the AbEnv" at the entrance of the conditional then add it
 	   to the AbEnv map *)
@@ -116,11 +121,11 @@ struct
 	   iter over both branches with a newly created map of AbEnvs *)
 	let e_init = get_abenv s l in
 	let s_init () = M.add l e_init (M.empty) in
-	let s1 = iter l sys (Single l) (s_init()) (entry strat1) in
-	let s1 = iter l sys strat1 s1 end_label in
+	let s1 = iter l0 sys (Single l) (s_init()) (entry strat1) in
+	let s1 = iter l0 sys strat1 s1 end_label in
 	let s1' = M.remove l s1 in
-	let s2 = iter l sys (Single l) (s_init ()) (entry strat2) in
-	let s2 = iter l sys strat2 s2 end_label in
+	let s2 = iter l0 sys (Single l) (s_init ()) (entry strat2) in
+	let s2 = iter l0 sys strat2 s2 end_label in
 	let s2' = M.remove l s2 in
 	(* This is starting to look awfully painful. 
 	   Also, should be labels_in_instr... *)
@@ -140,7 +145,7 @@ struct
 	let merged = (M.merge merge s1' s2') in
 	let s = M.fold (fun key v -> M.add key v) merged s in
 	let ipdomenv = get_abenv s end_label in
-	Printf.printf " env at ipdom %s \n" (AbEnv.L.to_string ipdomenv);
+	(*Printf.printf " env at ipdom %s \n" (AbEnv.L.to_string ipdomenv);*)
 	s
       | Loop (l,strat) ->
 	(* TODO : check end_label *)
@@ -154,15 +159,14 @@ struct
 	  else loop_widen (modify s' l (AbEnv.L.widen (get_abenv s l)))
 	in
 	let rec loop_narrow s =
-	  let s'' = iter l sys (Single l) s (entry strat) in
+	  let s'' = iter l0 sys (Single l) s (entry strat) in
 	  let s' = iter l0 sys strat s'' l in
 	  if AbEnv.L.order_dec  (get_abenv s l) (get_abenv s' l) then 
-	    let s = iter l0 sys strat s'' l in
-	    M.add l (get_abenv s'' l) s
+	    M.add l (get_abenv s l) s'
 	  else loop_narrow (modify s' l (AbEnv.L.narrow (get_abenv s l)))
 	in
 	let s = loop_narrow (loop_widen s) in
-	iter l sys (Single l) s end_label
+	iter l0 sys (Single l) s end_label
 
   let gen_constraints p =
     List.map
@@ -180,26 +184,27 @@ struct
 	    
       )
       (Cfg.build p)
+      
 
   let check p res =
     List.iter
       (function (l1,i,l2) ->
-	 if
-	   (match i with  (* Check if should pass l1 or l2?*)
-	     | Cfg.Assign (x,e) -> AbEnv.L.order_dec (AbEnv.assign ~l:(Some l1) x e (res l1)) (res l2)
-	      | Cfg.Assert t -> AbEnv.L.order_dec (AbEnv.backward_test t (res l1)) (res l2)
-	      | Cfg.Fi (t,l) -> true (* TODO  *)
-	      | Cfg.Input (lvars, e) -> 
-		AbEnv.L.order_dec 
-		  (List.fold_left 
-		     (fun accu x ->AbEnv.assign ~l:(Some l1) x e accu)
-		     (res l1) lvars)
-		  (res l2)
-	   )
-	 then ()
-	 else failwith (Printf.sprintf "wrong postfixpoint in edges (%d -> %d)\n" l1 l2))
+	if
+	  (match i with  (* Check if should pass l1 or l2?*)
+	    | Cfg.Assign (x,e) -> AbEnv.L.order_dec (AbEnv.assign ~l:(Some l1) x e (res l1)) (res l2)
+	    | Cfg.Assert t -> AbEnv.L.order_dec (AbEnv.backward_test t (res l1)) (res l2)
+	    | Cfg.Fi (t,l) -> true (* TODO  *)
+	    | Cfg.Input (lvars, e) -> 
+	      AbEnv.L.order_dec 
+		(List.fold_left 
+		   (fun accu x ->AbEnv.assign ~l:(Some l1) x e accu)
+		   (res l1) lvars)
+		(res l2)
+	  )
+	then ()
+	else failwith (Printf.sprintf "wrong postfixpoint in edges (%d -> %d)\n" l1 l2))
       (Cfg.build p)
-
+      
   let solve p =
     AbEnv.init (Syntax.vars p);
     let l0 = Cfg.entry (fst p) in

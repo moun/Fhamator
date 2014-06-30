@@ -260,16 +260,17 @@ struct
 	let card = 
 	  if (L.is_bottom_labels (L.meet_labels (Set labels_instr) labels_def))
 	  then
-	    (Printf.printf "joining cardinals for unmodified var: %s %s\n "
-	      (L.to_string x) (L.to_string y);
+	    (
+	      (*Printf.printf "joining cardinals for unmodified var: %s %s\n "
+	      (L.to_string x) (L.to_string y);*)
 	    L.join_cardinals cardx cardy)
 	  else
             (let sum = (Z.add cardx cardy) in
-	     Printf.printf "summing  cardinals for possibly modified var: %s %s\n"
-	       (L.to_string x) (L.to_string y);
+	     (*Printf.printf "summing  cardinals for possibly modified var: %s %s\n"
+	       (L.to_string x) (L.to_string y);*)
 	     if (Z.gt sum cardinal_top) then cardinal_top else  sum)
 	in
-	Printf.printf "  computed cardinal %s \n" (L.to_string 	(labels_def, card));
+	(*Printf.printf "  computed cardinal %s \n" (L.to_string 	(labels_def, card));*)
 	labels_def, card
 
 	
@@ -279,7 +280,8 @@ struct
       | _, card when (Z.equal card Z.one) -> true 
       | _ -> false )
     then
-      (Printf.printf "forward if join %s\n" (L.to_string cond);
+      (
+	(*Printf.printf "forward if join %s\n" (L.to_string cond);*)
       L.join)
     else 
       add_c labels
