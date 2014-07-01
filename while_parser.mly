@@ -73,6 +73,8 @@ list_vars:
 
 test:
  | LP test RP     { $2 }
+ | expr GE expr { Syntax.Comp (Syntax.Le,$3,$1) }
+ | expr GT expr { Syntax.Comp (Syntax.Lt,$3,$1) }
  | expr comp expr { Syntax.Comp ($2,$1,$3) }
  | test AND test  { Syntax.And ($1,$3) }
  | test OR test   { Syntax.Or ($1,$3) }
@@ -82,8 +84,9 @@ comp:
  | ASSIGN { Syntax.Eq }
  | EQ  { Syntax.Eq }
  | NEQ { Syntax.Neq }
- | LE  { Syntax.Le }
- | LT  { Syntax.Lt }
+ | LE { Syntax.Le }
+ | LT { Syntax.Lt }
+ 
 ;
 
 input:

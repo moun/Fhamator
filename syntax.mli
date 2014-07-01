@@ -29,7 +29,7 @@ type expr =
   | Initl
   | Var of var
   | Binop of binop * expr * expr
-type comp = Eq | Neq | Le | Lt
+type comp = Eq | Neq | Le | Lt 
 type test =
     Comp of comp * expr * expr
   | And of test * test
