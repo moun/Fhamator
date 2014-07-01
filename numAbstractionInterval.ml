@@ -172,7 +172,8 @@ struct
 
   let backward_neq n1 n2 =
     let (n1',n2') = backward_lt n1 n2 in
-    let (n1'',n2'') = backward_lt n2 n1 in
+    (* TODO : Report back this glitch *)
+    let (n2'',n1'') = backward_lt n2 n1 in
       (L.join n1' n1'',L.join n2' n2'')
 
   let backward_le n1 n2 =

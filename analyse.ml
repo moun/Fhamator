@@ -101,7 +101,8 @@ struct
   let rec iter l0 sys strat s end_label  =
     match strat with
       | Single l -> 
-	  let new_val = 
+	  let new_val =
+	    (* l0 has no equation, beware of deleting AbEnv.init_env() *)
 	    if (l0 = end_label) then
 	      AbEnv.L.join (AbEnv.init_env()) (apply_eq s (get_equation sys end_label))
 	    else
