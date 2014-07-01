@@ -177,17 +177,23 @@ struct
   let backward_le n1 n2 =
     (n1, n2)
 
+  (* if no label is given, the originating call is from a backward_test.
+     do not change the set of labels *)
   let forward_binop_cardinal ~l n1 n2 =
-    let label = ppset_l l in
     match n1 with
-    | _, c1 ->
+      | ppset1, c1 ->
       (match n2 with
-      | _, c2 ->
-	let mult = (Z.mul c1 c2) in
-	if (Z.gt mult cardinal_top) then
-	  label,cardinal_top
-	else
-	  label,mult)
+	| ppset2, c2 ->
+	  let mult = (Z.mul c1 c2) in
+	  let label = 
+	    (match l with
+	      | None -> L.join_labels ppset1 ppset2
+	      | Some l -> Set (Label_Set.singleton l))
+	  in
+	  if (Z.gt mult cardinal_top) then
+	    label,cardinal_top
+	  else
+	    label,mult)
 
   let forward_add  =
     forward_binop_cardinal 
