@@ -254,7 +254,7 @@ struct
     if ((le_test (Z (Num.num_of_int 0))  x) &&  (le_test y x' )) then
       (x, y)
     else
-      (Z (Num.num_of_int 0), (max_z' (abs_z' x') (abs_z' y') ))
+      (Z (Num.num_of_int 0), (max_z' (sub1 (abs_z' x')) (sub1 (abs_z' y')) ))
     
     
   let forward_binop ~l op i1 i2 =
