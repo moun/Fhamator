@@ -100,7 +100,7 @@ struct
     (* TODO : be quiet wary! the meet over sets of labels can be
        treacherous... e.g: conditional tests reduction! *)
 	
-    let widen = join
+    let widen x y  = (Top, cardinal_top)
     let narrow x y = x (* TODO : Revet *)
       
     let bottom () = (Set Label_Set.empty, Z.zero)

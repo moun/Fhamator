@@ -146,12 +146,14 @@ struct
 	let merged = (M.merge merge s1' s2') in
 	let s = M.fold (fun key v -> M.add key v) merged s in
 	let ipdomenv = get_abenv s end_label in
-	(*Printf.printf " env at ipdom %s \n" (AbEnv.L.to_string ipdomenv);*)
+	Printf.printf " env at ipdom %s \n" (AbEnv.L.to_string ipdomenv);
 	s
       | Loop (l,strat) ->
 	(* TODO : check end_label *)
 	(*let s = iter l0 sys (Single l) s (entry strat) in*)
+	 Printf.printf "env beg loop%s\n" (AbEnv.L.to_string (get_abenv s l));
 	let rec loop_widen s =
+	  Printf.printf "loop widen : %s\n" (AbEnv.L.to_string (get_abenv s l));
 	  let s'' = iter l0 sys (Single l) s (entry strat) in
 	  let s' = iter l0 sys strat s'' l in
 	  if AbEnv.L.order_dec (get_abenv s' l) (get_abenv s l) then 
@@ -160,8 +162,12 @@ struct
 	  else loop_widen (modify s' l (AbEnv.L.widen (get_abenv s l)))
 	in
 	let rec loop_narrow s =
+	  Printf.printf "loop  narrow : %s\n" (AbEnv.L.to_string (get_abenv s l));
 	  let s'' = iter l0 sys (Single l) s (entry strat) in
 	  let s' = iter l0 sys strat s'' l in
+	  Printf.printf "  s : loop  narrow : %s\n" (AbEnv.L.to_string (get_abenv s
+    l));
+	  Printf.printf "  s' : loop  narrow : %s\n" (AbEnv.L.to_string (get_abenv s' l));
 	  if AbEnv.L.order_dec  (get_abenv s l) (get_abenv s' l) then 
 	    M.add l (get_abenv s l) s'
 	  else loop_narrow (modify s' l (AbEnv.L.narrow (get_abenv s l)))
