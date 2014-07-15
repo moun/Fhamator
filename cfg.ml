@@ -56,7 +56,7 @@ let rec cfg end_label = function
       S.add (l,Assert t,entry i1) 
 	(S.add (l,Assert (neg_test t),entry i2)  
 	   (S.union (cfg end_label i1) (cfg end_label i2)))
-  | Fi (l,t,l') -> S.add (l, Fi (t,l'), end_label) S.empty
+  | Syntax.Fi (l,t,l') -> S.add (l, Fi (t,l'), end_label) S.empty
   | While (l,t,i)  ->
       S.add (l,Assert t,entry i) 
 	(S.add (l,Assert (neg_test t),end_label) (cfg l i))
