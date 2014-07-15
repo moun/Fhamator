@@ -149,6 +149,8 @@ struct
 	let rec loop_widen s =
 	  let s'' = iter l0 sys (Single l) s (entry strat) in
 	  let s' = iter l0 sys strat (M.add l e_entry s'') l in
+	  (*Printf.printf ">> Widen s : %s\n" (AbEnv.L.to_string (get_abenv s l));
+	  Printf.printf ">> Widen s' : %s\n" (AbEnv.L.to_string (get_abenv s' l));*)
 	  if AbEnv.L.order_dec (get_abenv s' l) (get_abenv s l) then 
 	    let s = iter l0 sys strat s'' l
 	    in M.add l (get_abenv s'' l) s
@@ -157,6 +159,8 @@ struct
 	let rec loop_narrow s =
 	  let s'' = iter l0 sys (Single l) s (entry strat) in
 	  let s' = iter l0 sys strat (M.add l e_entry s'') l in
+	  (*Printf.printf ">> Narrow s : %s\n" (AbEnv.L.to_string (get_abenv s l));
+	  Printf.printf ">> Narrow s' : %s\n" (AbEnv.L.to_string (get_abenv s' l));*)	  
 	  if AbEnv.L.order_dec  (get_abenv s l) (get_abenv s' l) then 
 	    M.add l (get_abenv s l) s'
 	  else loop_narrow (modify s' l (AbEnv.L.narrow (get_abenv s l)))
