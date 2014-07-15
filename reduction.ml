@@ -42,14 +42,14 @@ module RedIntervalCardinal =
 	      (match c with
 		| ppset, card ->
 		  if (NumCardinal.L.is_bottom c) then
-		    (Printf.printf "reducing to bottom. Card: %b \n" (NumCardinal.L.is_bottom c);
+		   ( (*Printf.printf "reducing to bottom. Card: %b \n" (NumCardinal.L.is_bottom c);*)
 		    None, NumCardinal.L.bottom())
 		  else if
 		      (Z.lt 
 			 (Z.succ (Z.of_string (Num.string_of_num (Num.sub_num a1 a0))))
 			 card) 
 		  then
-		    ( Printf.printf "reducing card wrt interval length \n";
+		    ( (*Printf.printf "reducing card wrt interval length \n";*)
 		      i, (ppset, Z.succ (Z.of_string (Num.string_of_num (Num.sub_num a1 a0))))
 		    )
 		  else

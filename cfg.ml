@@ -32,7 +32,7 @@ let rec entry = function
   | Syntax.Assign (l,x,e) -> l
   | Skip l -> l
   | If (l,t,i1,i2) -> l
-  | Fi (l,t,l') -> l
+  | Syntax.Fi (l,t,l') -> l
   | While (l,t,i)  -> l
   | Seq (i1,i2) -> entry i1
   | Inputh (l, _lvars) -> l 
