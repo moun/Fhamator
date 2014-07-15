@@ -130,8 +130,8 @@ struct
     let narrow i1 i2 =
       match (i1, i2) with
 	| (Some i1, Some i2) ->
-	    Some (((if min i1 = Infty_neg then min i2 else min i1),
-		       (if max i1 = Infty_pos then max i2 else max i2)))
+	   Some (((if min i1 = Infty_neg then min i2 else min i1),
+			 (if max i1 = Infty_pos then max i2 else max i2))) 
 	| _ -> None
 
     let order_dec i1 i2 =

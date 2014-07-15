@@ -79,6 +79,8 @@ let _ =
 	    let p = Parse.parse !target in
 	      let res = IntervalCardinal.solve_and_print p in
 		print_string (Print.print_program_with_res p res)
-      with x -> Printf.printf "uncaught exception %s\n" (Printexc.to_string x) 
-    end
+      with x -> Printf.printf "uncaught exception : %s\n" (Printexc.to_string x);
+      exit (0) 
+    end;
+    exit 1
 

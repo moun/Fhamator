@@ -43,9 +43,7 @@ struct
   let get_abenv s l = get (AbEnv.L.bottom ()) s l
   let rec apply_eq s = function
     | [] -> AbEnv.L.bottom ()
-    | [l,f] ->  (*Printf.printf "1: %d : %s --> %s\n" l 
-      (AbEnv.L.to_string (get_abenv s l))
-      (AbEnv.L.to_string (f (get_abenv s l)));*)
+    | [l,f] -> 
       f (get_abenv s l)
     | (l,f)::q -> 
       (*Printf.printf "2: %d : %s --> %s\n" l (AbEnv.L.to_string (get_abenv s l))
@@ -69,8 +67,8 @@ struct
   let rec gen_strategy = function 
     | Syntax.Skip l -> Single l
     | Syntax.Assign (l,x,e) -> Single l
-    | Syntax.If (l,t,b1,b2) -> (* Seq (Single l, Seq (gen_strategy b1,
-				  gen_strategy b2)) *)
+    | Syntax.If (l,t,b1,b2) -> 
+      (* Seq (Single l, Seq (gen_strategy b1, gen_strategy b2)) *)
       Branch(l, t, gen_strategy b1, gen_strategy b2)
     | Syntax.Fi (l,t,l') -> Single l
     | Syntax.While (l,t,b) -> Loop (l, gen_strategy b)
@@ -131,43 +129,34 @@ struct
 	(* This is starting to look awfully painful. 
 	   Also, should be labels_in_instr... *)
 	let labels = labels_in_strat (Seq(strat1,strat2)) in
-	let merge k xo yo = (match xo,yo with
-	  (* an invariant for both maps :
-	     - for all keys k, there is a binding in m1 or exclusively in m2,
-	     unless k is an immediate postdominator of a branch *)
+	let merge f k xo yo = (match xo,yo with
 	  | Some x, None -> Some x
 	  | None, Some y -> Some y
 	  | Some x, Some y when (k = end_label) ->
-	    (* Here should go the abstract semantics of conditionals *)
-	    Some (AbEnv.forward_if ~l:(Some l) e_init t labels x y)
-	  | _ -> 
-	    raise (Failure "Two states to merge that are not the immediate postdom!"))
+	    (* Here should go the abstract semantics of conditionals at the merge *)
+	    Some (f x y)
+	  | Some x, Some y ->
+	    Some (AbEnv.L.join x y)
+	  |  None, None -> None)
 	in
-	let merged = (M.merge merge s1' s2') in
-	let s = M.fold (fun key v -> M.add key v) merged s in
-	let ipdomenv = get_abenv s end_label in
-	Printf.printf " env at ipdom %s \n" (AbEnv.L.to_string ipdomenv);
+	let merged = (M.merge (merge (AbEnv.forward_if ~l:(Some l) e_init t labels)) s1' s2') in
+	(* This is not good *)
+	let s = (M.merge (merge AbEnv.L.join) s merged) in
+	  (*M.fold (fun key v -> M.add key v) merged s in*)
 	s
       | Loop (l,strat) ->
-	(* TODO : check end_label *)
-	(*let s = iter l0 sys (Single l) s (entry strat) in*)
-	 Printf.printf "env beg loop%s\n" (AbEnv.L.to_string (get_abenv s l));
+	let e_entry = get_abenv s l in 
 	let rec loop_widen s =
-	  Printf.printf "loop widen : %s\n" (AbEnv.L.to_string (get_abenv s l));
 	  let s'' = iter l0 sys (Single l) s (entry strat) in
-	  let s' = iter l0 sys strat s'' l in
+	  let s' = iter l0 sys strat (M.add l e_entry s'') l in
 	  if AbEnv.L.order_dec (get_abenv s' l) (get_abenv s l) then 
 	    let s = iter l0 sys strat s'' l
 	    in M.add l (get_abenv s'' l) s
 	  else loop_widen (modify s' l (AbEnv.L.widen (get_abenv s l)))
 	in
 	let rec loop_narrow s =
-	  Printf.printf "loop  narrow : %s\n" (AbEnv.L.to_string (get_abenv s l));
 	  let s'' = iter l0 sys (Single l) s (entry strat) in
-	  let s' = iter l0 sys strat s'' l in
-	  Printf.printf "  s : loop  narrow : %s\n" (AbEnv.L.to_string (get_abenv s
-    l));
-	  Printf.printf "  s' : loop  narrow : %s\n" (AbEnv.L.to_string (get_abenv s' l));
+	  let s' = iter l0 sys strat (M.add l e_entry s'') l in
 	  if AbEnv.L.order_dec  (get_abenv s l) (get_abenv s' l) then 
 	    M.add l (get_abenv s l) s'
 	  else loop_narrow (modify s' l (AbEnv.L.narrow (get_abenv s l)))
@@ -219,7 +208,7 @@ struct
     let f = get_abenv
       (iter l0 (make_eq_sys (gen_constraints p)) (strategy p)
 	 s_init  (snd p)) in
-      (*check p f;*) f
+      check p f; f
 
   let solve_and_print p =
 	let f = solve p in
