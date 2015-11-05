@@ -1,4 +1,4 @@
-LIBPATH = /Volumes/Dual/opt/local/lib/ocaml/site-lib/zarith
+LIBPATH = ~/.opam/system/lib/zarith
 OCAMLOPT=ocamlopt -annot -dtypes $(LIBPATH)
 OCAMLC=ocamlc -annot -g -dtypes -I +zarith -I $(LIBPATH)
 LIBS=nums zarith
