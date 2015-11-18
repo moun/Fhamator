@@ -1602,8 +1602,10 @@ struct
     | Syntax.Lt -> forward_add
     | Syntax.Le -> forward_add
 
-  let forward_if ~l cond labels = L.join 
-
+  let forward_if ~l cond labels = L.join
+				    
+  let forward_loop ~l cond labels = fun i -> i
+				    
   let backward_binop = function
     | Syntax.Add -> backward_add
     | Syntax.Sub -> backward_sub

@@ -53,7 +53,7 @@ type program = stmt * label
 
 (*********************************************************)
 (* Computes of the set of variables present in a program *)
-(*********************************************************)
+
 
 module S = Set.Make (struct type t = var let compare = compare end)
 
@@ -63,7 +63,8 @@ let rec var_expr s = function
   | Initl -> s
   | Var x -> S.add x s
   | Binop (o,e1,e2) -> var_expr (var_expr s e1) e2
-
+  | T _t -> s
+				
 let rec var_test s = function
   | Comp (c,e1,e2) -> var_expr (var_expr s e1) e2
   | And (t1,t2) -> var_test (var_test s t1) t2

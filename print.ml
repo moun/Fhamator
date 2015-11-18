@@ -26,9 +26,17 @@ let print_op = function
   | Sub -> "-"
   | Mult -> "*"
   | Rem -> "%"
-      
+
+let print_comp eq = function
+  | Eq -> eq
+  | Neq -> "<>"
+  | Lt -> "<"
+  | Le -> "<="
+	     
 type symb = No | Plus | Opp | Mul
 
+type prioptest = PAnd | PNo
+				
 let rec print_expr tab priop first scal_optim = function
   | Const z -> string_of_int z
   | Unknown -> "?"
@@ -48,16 +56,12 @@ let rec print_expr tab priop first scal_optim = function
       else sprintf "%s - %s" (print_expr tab Plus first scal_optim e1) (print_expr tab Opp false scal_optim e2)
   | Binop(Rem, e1, e2) -> sprintf "%s %% %s" 
     (print_expr tab Mul first scal_optim e1) (print_expr tab Mul false scal_optim e2)
-	
-let print_comp eq = function
-  | Eq -> eq
-  | Neq -> "<>"
-  | Lt -> "<"
-  | Le -> "<="
+  | T test ->
+    print_test_aux print_comp tab (fun x -> x) "or" "and" "==" PNo false test
 
-type prioptest = PAnd | PNo
+		       
 
-let rec print_test_aux print_comp tab filter sor sand eq priop scal_optim = function
+and  print_test_aux print_comp tab filter sor sand eq priop scal_optim = function
     (*    | Not t -> "not "^(print_test tab t) *)
   | Comp (c,e1,e2) -> filter (sprintf "%s %s %s" (print_expr tab No true scal_optim e1) (print_comp eq c) (print_expr tab No true scal_optim e2))
   | And (t1,t2) -> 

@@ -38,6 +38,11 @@ struct
     let y1' = AbNum2.forward_if ~l y1 labels y2 y3 in
     Red12.reduce (x1',y1')
 
+  let forward_loop ~l (x0,y0) labels (x,y)  = 
+    let x' = AbNum1.forward_loop ~l x0 labels x in
+    let y' = AbNum2.forward_loop ~l y0 labels y in
+    Red12.reduce (x',y')
+		 
   let const ~l c = Red12.reduce (AbNum1.const ~l c, AbNum2.const ~l c)
 
   let initl ~l = Red12.reduce (AbNum1.initl ~l, AbNum2.initl ~l)

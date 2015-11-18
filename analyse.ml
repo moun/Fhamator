@@ -62,7 +62,7 @@ struct
     | Single of label
     | Seq of strategy * strategy
     | Branch of label * test * strategy * strategy
-    | Loop of label * strategy 
+    | Loop of label * test * strategy 
 
   let rec gen_strategy = function 
     | Syntax.Skip l -> Single l
@@ -71,16 +71,16 @@ struct
       (* Seq (Single l, Seq (gen_strategy b1, gen_strategy b2)) *)
       Branch(l, t, gen_strategy b1, gen_strategy b2)
     | Syntax.Fi (l,t,l') -> Single l
-    | Syntax.While (l,t,b) -> Loop (l, gen_strategy b)
+    | Syntax.While (l,t,b) -> Loop (l,t, gen_strategy b)
     | Syntax.Seq (i1,i2) -> Seq (gen_strategy i1, gen_strategy i2)
     | Syntax.Inputh (l,_lvars) -> Single l (* TODO *)
     | Syntax.Inputl (l, _lvars) -> Single l (* TODO *)
 
   let rec entry  = function
     | Single l -> l
-    | Seq (strat1,strat2) -> entry strat1
-    | Branch (l,t,strat1,strat2) -> l
-    | Loop (l, strat) -> l
+    | Seq (strat1,_strat2) -> entry strat1
+    | Branch (l,_t,strat1,strat2) -> l
+    | Loop (l, _t, strat) -> l
 
   let labels_in_strat strat =
     let rec rec_labels list = 
@@ -89,7 +89,7 @@ struct
 	| Seq (strat1,strat2) -> rec_labels (rec_labels list strat1) strat2
 	| Branch(l,t,strat1,strat2) -> 
 	  rec_labels (rec_labels (l :: list) strat1) strat2
-	| Loop(l,strat) -> rec_labels (l :: list) strat
+	| Loop(l, _t, strat) -> rec_labels (l :: list) strat
     in
     rec_labels [] strat
 
@@ -108,7 +108,7 @@ struct
 	  in M.add end_label new_val s
       | Seq (strat1,strat2) ->
 	let s =  iter l0 sys strat1 s (entry strat2) in
-	let env = get_abenv s (entry strat2) in
+	(*let env = get_abenv s (entry strat2) in*)
 	(*Printf.printf "env before seq %s %d \n" (AbEnv.L.to_string env) 
 	  (entry strat2);*)
 	iter l0 sys strat2 s end_label
@@ -136,6 +136,7 @@ struct
 	    (* Here should go the abstract semantics of conditionals at the merge *)
 	    Some (f x y)
 	  | Some x, Some y ->
+	     (* should fire only when k != end_label *)
 	    Some (AbEnv.L.join x y)
 	  |  None, None -> None)
 	in
@@ -144,13 +145,14 @@ struct
 	let s = (M.merge (merge AbEnv.L.join) s merged) in
 	  (*M.fold (fun key v -> M.add key v) merged s in*)
 	s
-      | Loop (l,strat) ->
+      | Loop (l,t,strat) ->
 	let e_entry = get_abenv s l in 
 	let rec loop_widen s =
 	  let s'' = iter l0 sys (Single l) s (entry strat) in
 	  let s' = iter l0 sys strat (M.add l e_entry s'') l in
 	  (*Printf.printf ">> Widen s : %s\n" (AbEnv.L.to_string (get_abenv s l));
 	  Printf.printf ">> Widen s' : %s\n" (AbEnv.L.to_string (get_abenv s' l));*)
+	  (* fixpoint reached? *)
 	  if AbEnv.L.order_dec (get_abenv s' l) (get_abenv s l) then 
 	    let s = iter l0 sys strat s'' l
 	    in M.add l (get_abenv s'' l) s
@@ -166,7 +168,16 @@ struct
 	  else loop_narrow (modify s' l (AbEnv.L.narrow (get_abenv s l)))
 	in
 	let s = loop_narrow (loop_widen s) in
-	iter l0 sys (Single l) s end_label
+        let s = iter l0 sys (Single l) s end_label in
+	(**)
+	(* TODO forward loop *)
+	let e_init = get_abenv s l in
+	let labels = labels_in_strat(strat) in
+	let forward_loop envf =
+	  AbEnv.forward_loop ~l:(Some l) e_init t labels envf
+	in
+	(**)
+	M.add end_label (forward_loop (get_abenv s end_label)) s
 
   let gen_constraints p =
     List.map

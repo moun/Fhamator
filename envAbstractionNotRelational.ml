@@ -60,8 +60,8 @@ struct
   let assign ~l x e env =
     reduce (L.update env x (forward_expr ~l env e))
      
-  let forward_if ~l env t labels env1 env2 =
-    let abval_t = forward_expr ~l  env (T t) in
+  let forward_if ~l env_guard t labels env1 env2 =
+    let abval_t = forward_expr ~l  env_guard (T t) in
     (*(match l with
       | Some l ->
 	Printf.printf "at label %d, %s \n" l (AbNum.L.to_string abval_t)
@@ -71,6 +71,14 @@ struct
       L.M.mapi
 	(fun key v -> AbNum.forward_if ~l abval_t labels  v (L.M.find key env2))
 	env1
+    with Not_found -> assert false
+
+  let forward_loop ~l env_guard t labels env_final =
+    let abval_t = forward_expr ~l env_guard (T t) in
+    try
+      L.M.mapi
+	(fun key v -> AbNum.forward_loop ~l abval_t labels v )
+	env_final
     with Not_found -> assert false
    
   let rec backward_expr env e n =
@@ -88,8 +96,9 @@ struct
 	      (forward_expr ~l:None env e2)
           in
             L.meet (backward_expr env e1 n1) (backward_expr env e2 n2)
-  
-  let rec backward_test t env =
+      | T t -> backward_test t env
+		   
+  and backward_test t env =
     reduce (
       match t with
 	| Comp (c, e1, e2) ->

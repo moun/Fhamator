@@ -27,7 +27,8 @@ module Make :
 	val backward_binop : Syntax.binop -> L.t -> L.t -> L.t -> L.t * L.t
 	  
 	val forward_if : l:Syntax.label option -> L.t  -> Syntax.label list -> L.t  ->   L.t  -> L.t 
-    
+
+	val forward_loop : l:Syntax.label option -> L.t -> Syntax.label list -> L.t -> L.t											   
 	val const : l:Syntax.label option -> int -> L.t 
 
 	val initl : l:Syntax.label option -> L.t 

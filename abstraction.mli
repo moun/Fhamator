@@ -35,6 +35,8 @@ sig
 
   val forward_if : l:Syntax.label option -> L.t -> Syntax.label list -> L.t -> L.t -> L.t
 
+  val forward_loop : l:Syntax.label option -> L.t -> Syntax.label list -> L.t -> L.t
+		  		     
   val const : l:Syntax.label option -> int -> L.t
 
   val initl : l:Syntax.label option -> L.t 
@@ -61,8 +63,10 @@ sig
    
   val forward_if : l:Syntax.label option -> L.t -> Syntax.test -> 
     Syntax.label list -> L.t -> L.t -> L.t
-    (*AbNum.L.t L.M.t -> AbNum.L.t L.M.t -> AbNum.L.t L.M.t*)
-
+    
+  val forward_loop : l:Syntax.label option -> L.t -> Syntax.test ->
+		     Syntax.label list -> L.t -> L.t
+ 					 
   val backward_test : Syntax.test -> L.t -> L.t
 end
 

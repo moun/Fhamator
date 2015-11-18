@@ -100,7 +100,13 @@ struct
     (* TODO : be quiet wary! the meet over sets of labels can be
        treacherous... e.g: conditional tests reduction! *)
 	
-    let widen x y  = join x y
+    let widen x y  =
+      let order_dec_cardinals = Z.leq in
+      match x,y with
+      | (ppsetx ,cardx), (ppsety,cardy) ->
+	 join_labels ppsetx ppsety,
+	 (if order_dec_cardinals cardy cardx then cardx else cardinal_top)
+	 
     let narrow x y = meet x y
       
     let bottom () = (Set Label_Set.empty, Z.zero)
@@ -291,6 +297,34 @@ struct
       L.join)
     else 
       add_c labels
+
+   let top_c labels x  =
+    match x with
+      | (ppsetx, cardx) ->
+	let labels = Label_Set.of_list labels in	 
+	let card = 
+	  if (L.is_bottom_labels (L.meet_labels (Set labels) ppsetx))
+	  then
+	    (
+	      (*Printf.printf "joining cardinals for unmodified var: %s %s\n "
+	      (L.to_string x) (L.to_string y);*)
+	      cardx)
+	  else
+            cardinal_top
+	in
+	(*Printf.printf "  computed cardinal %s \n" (L.to_string 	(labels_def, card));*)
+	ppsetx, card
+	    
+   let forward_loop ~l cond labels =
+    if (match cond with
+	| labels_def, card when (Z.equal card Z.one) ->
+	   Printf.printf "  condition's cardinal %s \n" (L.to_string cond);
+	   true
+	| _  -> false)
+    then
+      (fun i -> i)
+    else
+      top_c labels
       
 
   let backward_binop = function

@@ -53,6 +53,9 @@ module type Interval =
     val forward_if :
       l:'a ->
       'b -> 'c -> (z' * z') option -> (z' * z') option -> (z' * z') option
+    val forward_loop :
+      l:'a ->
+      'b -> 'c  -> (z' * z') option -> (z' * z') option								    
     val reduce : z' -> z' -> (z' * z') option
     val backward_binop :
       Syntax.binop ->
@@ -153,5 +156,9 @@ module type Cardinal =
       l:'a ->
       'b * Z.t ->
       Label_Set.elt list -> ppset * Z.t -> ppset * Z.t -> ppset * Z.t
+     val forward_loop :
+      l:'a ->
+      L.t ->
+      Label_Set.elt list -> ppset * Z.t -> ppset * Z.t 								    
     val backward_binop : Syntax.binop -> 'a -> 'b -> 'c -> 'b * 'c
   end

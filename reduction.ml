@@ -59,7 +59,10 @@ module RedIntervalCardinal =
      end)
 
 module IntervalCardinal = 
-      Reducedprod.Make (NumInterval) (NumCardinal) (RedIntervalCardinal)
+  Reducedprod.Make
+    (NumInterval)
+    (NumCardinal)
+    (RedIntervalCardinal)
 
 module RedIntervalCardinalSign = 
   RedABC
