@@ -1,1 +1,7 @@
+*.annot
+*.cmi
+*.cmo
+while_lexer.ml
+while_parser.ml
+while_parser.mli
 testunits/results/*
