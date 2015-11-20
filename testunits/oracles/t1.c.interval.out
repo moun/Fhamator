@@ -1,0 +1,14 @@
+                                      // z:[-oo,+oo]  y:[-oo,+oo]  x:[-oo,+oo]  v:[-oo,+oo]  u:[-oo,+oo]  
+u = ?;
+                                      // z:[-oo,+oo]  y:[-oo,+oo]  x:[-oo,+oo]  v:[-oo,+oo]  u:[-oo,+oo]  
+v = ?;
+                                      // z:[-oo,+oo]  y:[-oo,+oo]  x:[-oo,+oo]  v:[-oo,+oo]  u:[-oo,+oo]  
+x = 100;
+                                      // z:[-oo,+oo]  y:[-oo,+oo]  x:[100,100]  v:[-oo,+oo]  u:[-oo,+oo]  
+y = 0;
+                                      // z:[-oo,+oo]  y:[0,0]  x:[100,100]  v:[-oo,+oo]  u:[-oo,+oo]  
+z = x;
+                                      // z:[100,100]  y:[0,0]  x:[100,100]  v:[-oo,+oo]  u:[-oo,+oo]  
+x = u
+                                      // z:[100,100]  y:[0,0]  x:[-oo,+oo]  v:[-oo,+oo]  u:[-oo,+oo]  
+

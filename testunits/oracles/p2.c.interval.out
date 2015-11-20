@@ -1,0 +1,19 @@
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  
+while 0 < x {
+                                      // y:[-oo,+oo]  x:[1,+oo]  
+  skip
+};
+                                      // y:[-oo,+oo]  x:[-oo,0]  
+if x <= 0 {
+                                      // y:[-oo,+oo]  x:[-oo,0]  
+  y = 3;
+                                      // y:[3,3]  x:[-oo,0]  
+  skip
+} else {
+                                      // y:bot  x:bot  
+  y = 0 - 3;
+                                      // y:[-3,-3]  x:bot  
+  skip
+}
+                                      // y:[-3,3]  x:[-oo,0]  
+

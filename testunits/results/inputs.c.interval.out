@@ -1,0 +1,12 @@
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  v:[-oo,+oo]  u:[-oo,+oo]  r:[-oo,+oo]  
+inputh r;
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  v:[-oo,+oo]  u:[-oo,+oo]  r:[-oo,+oo]  
+inputh x y;
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  v:[-oo,+oo]  u:[-oo,+oo]  r:[-oo,+oo]  
+inputl u v;
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  v:[-oo,+oo]  u:[-oo,+oo]  r:[-oo,+oo]  
+u = v;
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  v:[-oo,+oo]  u:[-oo,+oo]  r:[-oo,+oo]  
+v = y
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  v:[-oo,+oo]  u:[-oo,+oo]  r:[-oo,+oo]  
+

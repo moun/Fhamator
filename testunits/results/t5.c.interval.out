@@ -1,0 +1,12 @@
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  
+x = 1;
+                                      // y:[-oo,+oo]  x:[1,1]  
+if x < 0 {
+                                      // y:bot  x:bot  
+  y = x
+} else {
+                                      // y:[-oo,+oo]  x:[1,1]  
+  y = 0
+}
+                                      // y:[0,0]  x:[1,1]  
+

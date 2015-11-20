@@ -1,0 +1,16 @@
+                                      // z:[-oo,+oo]  l2:[-oo,+oo]  l1:[-oo,+oo]  h2:[-oo,+oo]  h1:[-oo,+oo]  
+inputh h1 h2;
+                                      // z:[-oo,+oo]  l2:[-oo,+oo]  l1:[-oo,+oo]  h2:[-oo,+oo]  h1:[-oo,+oo]  
+inputl l1 l2;
+                                      // z:[-oo,+oo]  l2:[-oo,+oo]  l1:[-oo,+oo]  h2:[-oo,+oo]  h1:[-oo,+oo]  
+h1 = 0;
+                                      // z:[-oo,+oo]  l2:[-oo,+oo]  l1:[-oo,+oo]  h2:[-oo,+oo]  h1:[0,0]  
+if z < 0 {
+                                      // z:[-oo,-1]  l2:[-oo,+oo]  l1:[-oo,+oo]  h2:[-oo,+oo]  h1:[0,0]  
+  l1 = 0
+} else {
+                                      // z:[0,+oo]  l2:[-oo,+oo]  l1:[-oo,+oo]  h2:[-oo,+oo]  h1:[0,0]  
+  l1 = 1
+}
+                                      // z:[-oo,+oo]  l2:[-oo,+oo]  l1:[0,1]  h2:[-oo,+oo]  h1:[0,0]  
+

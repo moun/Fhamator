@@ -1,0 +1,6 @@
+                                      // x:[-oo,+oo]  r:[-oo,+oo]  
+x = r + 2;
+                                      // x:[-oo,+oo]  r:[-oo,+oo]  
+r = 0
+                                      // x:[-oo,+oo]  r:[0,0]  
+

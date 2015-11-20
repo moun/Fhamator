@@ -1,0 +1,24 @@
+                                      // z:[-oo,+oo]  y:[-oo,+oo]  x:[-oo,+oo]  a:[-oo,+oo]  
+inputh y;
+                                      // z:[-oo,+oo]  y:[-oo,+oo]  x:[-oo,+oo]  a:[-oo,+oo]  
+inputl x a z;
+                                      // z:[-oo,+oo]  y:[-oo,+oo]  x:[-oo,+oo]  a:[-oo,+oo]  
+if a < 0 {
+                                      // z:[-oo,+oo]  y:[-oo,+oo]  x:[-oo,+oo]  a:[-oo,-1]  
+  x = 1
+} else {
+                                      // z:[-oo,+oo]  y:[-oo,+oo]  x:[-oo,+oo]  a:[0,+oo]  
+  x = 2;
+                                      // z:[-oo,+oo]  y:[-oo,+oo]  x:[2,2]  a:[0,+oo]  
+  if y < 0 {
+                                      // z:[-oo,+oo]  y:[-oo,-1]  x:[2,2]  a:[0,+oo]  
+    z = 1
+  } else {
+                                      // z:[-oo,+oo]  y:[0,+oo]  x:[2,2]  a:[0,+oo]  
+    z = 2
+  }
+};
+                                      // z:[-oo,+oo]  y:[-oo,+oo]  x:[1,2]  a:[-oo,+oo]  
+z = x + z
+                                      // z:[-oo,+oo]  y:[-oo,+oo]  x:[1,2]  a:[-oo,+oo]  
+

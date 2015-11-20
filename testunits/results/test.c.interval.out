@@ -1,0 +1,14 @@
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  secret2:[-oo,+oo]  secret1:[-oo,+oo]  
+inputh secret1 secret2;
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  secret2:[-oo,+oo]  secret1:[-oo,+oo]  
+inputl x y;
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  secret2:[-oo,+oo]  secret1:[-oo,+oo]  
+if 0 <= secret1 {
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  secret2:[-oo,+oo]  secret1:[0,+oo]  
+  x = 1
+} else {
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  secret2:[-oo,+oo]  secret1:[-oo,-1]  
+  x = 0
+}
+                                      // y:[-oo,+oo]  x:[0,1]  secret2:[-oo,+oo]  secret1:[-oo,+oo]  
+

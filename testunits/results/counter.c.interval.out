@@ -1,0 +1,17 @@
+                                      // x:[-oo,+oo]  l:[-oo,+oo]  counter:[-oo,+oo]  
+l = 0;
+                                      // x:[-oo,+oo]  l:[0,0]  counter:[-oo,+oo]  
+x = 0;
+                                      // x:[0,0]  l:[0,0]  counter:[-oo,+oo]  
+counter = 0;
+                                      // x:[0,100]  l:[-oo,0]  counter:[0,+oo]  
+while x < 100 {
+                                      // x:[0,99]  l:[-oo,0]  counter:[0,+oo]  
+  counter = counter + 1;
+                                      // x:[0,99]  l:[-oo,0]  counter:[1,+oo]  
+  x = x + 1;
+                                      // x:[1,100]  l:[-oo,0]  counter:[1,+oo]  
+  l = l - 1
+}
+                                      // x:[100,100]  l:[-oo,0]  counter:[0,+oo]  
+

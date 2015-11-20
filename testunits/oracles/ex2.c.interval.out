@@ -1,0 +1,21 @@
+                                      // length:[-oo,+oo]  j:[-oo,+oo]  i:[-oo,+oo]  
+while length <> 100 {
+                                      // length:[-oo,+oo]  j:[-oo,+oo]  i:[-oo,+oo]  
+  skip
+};
+                                      // length:[100,100]  j:[-oo,+oo]  i:[-oo,+oo]  
+i = 1;
+                                      // length:[100,100]  j:[-oo,+oo]  i:[1,100]  
+while i < length {
+                                      // length:[100,100]  j:[-oo,+oo]  i:[1,99]  
+  j = i - 1;
+                                      // length:[100,100]  j:[-1,98]  i:[1,99]  
+  while 0 <= j {
+                                      // length:[100,100]  j:[0,98]  i:[1,99]  
+    j = j - 1
+  };
+                                      // length:[100,100]  j:[-1,-1]  i:[1,99]  
+  i = i + 1
+}
+                                      // length:[100,100]  j:[-oo,+oo]  i:[100,100]  
+

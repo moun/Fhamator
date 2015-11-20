@@ -1,0 +1,17 @@
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  
+x = 100;
+                                      // y:[-oo,+oo]  x:[100,100]  
+if x < 0 {
+                                      // y:bot  x:bot  
+  while x < 0 {
+                                      // y:bot  x:bot  
+    x = x + 1
+  };
+                                      // y:bot  x:bot  
+  y = x
+} else {
+                                      // y:[-oo,+oo]  x:[100,100]  
+  y = 0
+}
+                                      // y:[0,0]  x:[100,100]  
+

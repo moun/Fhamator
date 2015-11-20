@@ -1,0 +1,14 @@
+                                      // y:({ Top }, 2^64)  x:({ Top }, 2^64)  secret2:({ Top }, 2^64)  secret1:({ Top }, 2^64)  
+inputh secret1 secret2;
+                                      // y:({ Top }, 2^64)  x:({ Top }, 2^64)  secret2:({ 0 }, 2^64)  secret1:({ 0 }, 2^64)  
+inputl x y;
+                                      // y:({ 1 }, 1)  x:({ 1 }, 1)  secret2:({ 0 }, 2^64)  secret1:({ 0 }, 2^64)  
+if 0 <= secret1 {
+                                      // y:({ 1 }, 1)  x:({ 1 }, 1)  secret2:({ 0 }, 2^64)  secret1:({ 0 }, 2^64)  
+  x = 1
+} else {
+                                      // y:({ 1 }, 1)  x:({ 1 }, 1)  secret2:({ 0 }, 2^64)  secret1:({ 0 }, 2^64)  
+  x = 0
+}
+                                      // y:({ 1 }, 1)  x:({ 2, 3 }, 2)  secret2:({ 0 }, 2^64)  secret1:({ 0 }, 2^64)  
+

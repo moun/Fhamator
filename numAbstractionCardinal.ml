@@ -318,7 +318,7 @@ struct
    let forward_loop ~l cond labels =
     if (match cond with
 	| labels_def, card when (Z.equal card Z.one) ->
-	   Printf.printf "  condition's cardinal %s \n" (L.to_string cond);
+	   (*Printf.printf "  condition's cardinal %s \n" (L.to_string cond);*)
 	   true
 	| _  -> false)
     then

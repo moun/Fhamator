@@ -1,0 +1,8 @@
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  
+inputl x;
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  
+inputh y;
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  
+x = y
+                                      // y:[-oo,+oo]  x:[-oo,+oo]  
+
