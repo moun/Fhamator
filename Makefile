@@ -1,4 +1,5 @@
-LIBPATH = ~/.opam/system/lib/zarith
+LIBPATH =`ocamlfind query zarith`
+
 OCAMLOPT=ocamlopt -annot -dtypes $(LIBPATH)
 OCAMLC=ocamlc -annot -g -dtypes -I +zarith -I $(LIBPATH)
 LIBS=nums zarith
